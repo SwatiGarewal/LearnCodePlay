@@ -1,0 +1,537 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mouse Adventure</title>
+<link rel="stylesheet" href="{% static 'home/bootstrap/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'home/fontawesome/css/all.css' %}">
+<!-- --------------------css------------------------------ -->
+<style>
+body{
+   margin: 0;
+      font-family: Arial;
+background: url("{% static 'home/image/background2.png' %}") no-repeat center/cover;      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      width: 100%;
+    }
+
+.main{
+  display:grid;
+  grid-template-columns:1fr 1.5fr 1fr;
+  gap:20px;
+  width:90%;
+  max-width:1200px;
+}
+
+.card{
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(10px);
+  padding:20px;
+  border-radius:20px;
+  text-align:justify;
+}
+
+canvas{
+  border-radius:10px;
+  background:#fff;
+}
+
+pre{
+  background:#111;
+  padding:10px;
+  border-radius:10px;
+  height:220px;
+  overflow:auto;
+  text-align:left;
+}
+
+.tab{
+  padding:6px;
+  margin:3px;
+  background:#555;
+  border:none;
+  color:white;
+  cursor:pointer;
+  border-radius:8px;
+}
+
+.tab.active{
+  background:cyan;
+  color:black;
+}
+
+.btn{
+  padding:8px 15px;
+  background:cyan;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  margin-top:10px;
+}
+  .btn:hover{
+  background-color:cyan;
+  color: #111;
+}
+#code{
+  height: 380px;
+}
+.back-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+
+  border: none;
+  border-radius: 20px;
+  height: 60px;
+  width: 100px;
+  background: linear-gradient(45deg, #151e52, #00eeff);
+  color: rgb(252, 251, 251);
+  font-weight: bold;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* Hover Effect */
+.back-btn:hover {
+  background: #00ffff;
+  color: black;
+
+  box-shadow: 0 0 10px #00ffff,
+              0 0 20px #00ffff;
+
+  transform: scale(1.1);
+}
+</style>
+</head>
+<body>
+<!-- -----------------dashboard------------------------ -->
+<div class="main">
+
+<!-- GAME -->
+<div class="card">
+<h2>Mouse Maze Game</h2>
+<p>Moves: <span id="moves">0</span></p>
+<p>Best: <span id="best">-</span></p>
+
+<canvas id="game" width="275" height="275"></canvas>
+
+<div id="msg"></div>
+<button class="btn" onclick="start()">Restart</button>
+</div>
+
+<!-- CODE -->
+<div class="card">
+<h2>Code Viewer</h2>
+
+<span><button class="tab active" onclick="setLang('python',this)">Python</button>
+<button class="tab" onclick="setLang('java',this)">Java</button>
+<button class="tab" onclick="setLang('cpp',this)">C++</button>
+<button class="tab" onclick="setLang('c',this)">C</button></span>
+<br>
+<pre id="code"></pre>
+</div>
+
+<!-- INFO -->
+<div class="card">
+<h2>Game Info</h2>
+<p>Reach cheese in minimum moves 🧀</p>
+    <h6>Help the mouse find his treat and learn movement logic!</h6>
+    <h6>🐭 Guide a curious little mouse through a maze of twists and turns to reach his favorite treat cheesecake! This fun and educational puzzle game helps players develop logical thinking and directional skills as they navigate challenges and learn movement patterns. Perfect for all ages, it’s a delightful blend of brain-teasing fun and adorable adventure.</h6>
+
+</div>
+  <!-- back button -->
+  <a href="{% url 'game' %}"><button class="back-btn">Back</button></a>
+
+</div>
+<!-- -------------------javascript-------------------------- -->
+<script>
+
+let canvas=document.getElementById("game");
+let ctx=canvas.getContext("2d");
+let gameOver = false;
+
+let size=25;
+let grid=11;
+
+let player, cheese, maze;
+
+let moves=0;
+let best = parseInt(localStorage.getItem("mouseBest"));
+
+if(best === null){
+  document.getElementById("best").innerText="-";
+}else{
+  document.getElementById("best").innerText=best;
+}
+
+let lang="python";
+let action="start";
+
+/* ✅ PROFESSIONAL CODE */
+const codes = {
+
+start:{
+python:`# Generate Maze
+import random
+
+WIDTH, HEIGHT = 10, 10
+
+maze = [[0]*WIDTH for _ in range(HEIGHT)]
+
+# simple walls
+for i in range(WIDTH):
+    maze[0][i] = maze[HEIGHT-1][i] = 1
+for i in range(HEIGHT):
+    maze[i][0] = maze[i][WIDTH-1] = 1
+
+player = [1,1]
+
+def random_position():
+    while True:
+        x = random.randint(1, WIDTH-2)
+        y = random.randint(1, HEIGHT-2)
+        if maze[y][x] == 0:
+            return [x,y]
+
+cheese = random_position()`,
+
+java:`// Generate Maze
+int WIDTH = 10, HEIGHT = 10;
+
+int[][] maze = new int[HEIGHT][WIDTH];
+
+// walls
+for(int i=0;i<WIDTH;i++){
+    maze[0][i] = maze[HEIGHT-1][i] = 1;
+}
+for(int i=0;i<HEIGHT;i++){
+    maze[i][0] = maze[i][WIDTH-1] = 1;
+}
+
+int x = 1, y = 1;
+
+Random rand = new Random();
+int cheeseX, cheeseY;
+
+do{
+    cheeseX = rand.nextInt(WIDTH-2)+1;
+    cheeseY = rand.nextInt(HEIGHT-2)+1;
+}while(maze[cheeseY][cheeseX] == 1);`,
+
+cpp:`// Generate Maze
+#include <vector>
+#include <cstdlib>
+using namespace std;
+
+int WIDTH = 10, HEIGHT = 10;
+
+vector<vector<int>>maze(HEIGHT,vector<int>(WIDTH,0));
+
+// walls
+for(int i=0;i<WIDTH;i++){
+    maze[0][i] = maze[HEIGHT-1][i] = 1;
+}
+for(int i=0;i<HEIGHT;i++){
+    maze[i][0] = maze[i][WIDTH-1] = 1;
+}
+
+int x = 1, y = 1;
+
+int cheeseX, cheeseY;
+do{
+    cheeseX = rand()%(WIDTH-2)+1;
+    cheeseY = rand()%(HEIGHT-2)+1;
+}while(maze[cheeseY][cheeseX] == 1);`,
+
+c:`// Generate Maze
+#include <stdio.h>
+#include <stdlib.h>
+
+int WIDTH = 10, HEIGHT = 10;
+
+int maze[10][10] = {0};
+
+// walls
+for(int i=0;i<WIDTH;i++){
+    maze[0][i] = maze[HEIGHT-1][i] = 1;
+}
+for(int i=0;i<HEIGHT;i++){
+    maze[i][0] = maze[i][WIDTH-1] = 1;
+}
+
+int x = 1, y = 1;
+
+int cheeseX, cheeseY;
+do{
+    cheeseX = rand()%(WIDTH-2)+1;
+    cheeseY = rand()%(HEIGHT-2)+1;
+}while(maze[cheeseY][cheeseX] == 1);`
+},
+
+up:{
+python:`# Move Up
+if y > 0 and maze[y-1][x] != 1:
+    y -= 1
+else:
+    print("Blocked!")`,
+
+java:`if(y > 0 && maze[y-1][x] != 1){
+    y--;
+}else{
+    System.out.println("Blocked!");
+}`,
+
+cpp:`if(y > 0 && maze[y-1][x] != 1){
+    y--;
+}else{
+    cout << "Blocked!";
+}`,
+
+c:`if(y > 0 && maze[y-1][x] != 1){
+    y--;
+}else{
+    printf("Blocked!");
+}`
+},
+
+down:{
+python:`# Move Down
+if y < HEIGHT-1 and maze[y+1][x] != 1:
+    y += 1
+else:
+    print("Blocked!")`,
+
+java:`if(y < HEIGHT-1 && maze[y+1][x] != 1){
+    y++;
+}else{
+    System.out.println("Blocked!");
+}`,
+
+cpp:`if(y < HEIGHT-1 && maze[y+1][x] != 1){
+    y++;
+}else{
+    cout << "Blocked!";
+}`,
+
+c:`if(y < HEIGHT-1 && maze[y+1][x] != 1){
+    y++;
+}else{
+    printf("Blocked!");
+}`
+},
+
+left:{
+python:`# Move Left
+if x > 0 and maze[y][x-1] != 1:
+    x -= 1
+else:
+    print("Blocked!")`,
+
+java:`if(x > 0 && maze[y][x-1] != 1){
+    x--;
+}else{
+    System.out.println("Blocked!");
+}`,
+
+cpp:`if(x > 0 && maze[y][x-1] != 1){
+    x--;
+}else{
+    cout << "Blocked!";
+}`,
+
+c:`if(x > 0 && maze[y][x-1] != 1){
+    x--;
+}else{
+    printf("Blocked!");
+}`
+},
+
+right:{
+python:`# Move Right
+if x < WIDTH-1 and maze[y][x+1] != 1:
+    x += 1
+else:
+    print("Blocked!")`,
+
+java:`if(x < WIDTH-1 && maze[y][x+1] != 1){
+    x++;
+}else{
+    System.out.println("Blocked!");
+}`,
+
+cpp:`if(x < WIDTH-1 && maze[y][x+1] != 1){
+    x++;
+}else{
+    cout << "Blocked!";
+}`,
+
+c:`if(x < WIDTH-1 && maze[y][x+1] != 1){
+    x++;
+}else{
+    printf("Blocked!");
+}`
+},
+
+win:{
+python:`# Win Condition
+if [x,y] == cheese:
+    print("You Win!")`,
+
+java:`if(x == cheeseX && y == cheeseY){
+    System.out.println("You Win!");
+}`,
+
+cpp:`if(x == cheeseX && y == cheeseY){
+    cout << "You Win!";
+}`,
+
+c:`if(x == cheeseX && y == cheeseY){
+    printf("You Win!");
+}`
+}
+
+};
+/* LANGUAGE */
+function setLang(l,btn){
+lang=l;
+document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");
+code.innerText=codes[action][lang];
+}
+
+/* CODE UPDATE */
+function showCode(a){
+action=a;
+code.innerText=codes[a][lang];
+}
+
+/* MAZE */
+function generateMaze(){
+let m=Array.from({length:grid},()=>Array(grid).fill(1));
+
+function carve(x,y){
+m[y][x]=0;
+let dirs=[[1,0],[-1,0],[0,1],[0,-1]];
+dirs.sort(()=>Math.random()-0.5);
+
+for(let [dx,dy] of dirs){
+let nx=x+dx*2;
+let ny=y+dy*2;
+
+if(nx>0 && ny>0 && nx<grid-1 && ny<grid-1 && m[ny][nx]==1){
+m[y+dy][x+dx]=0;
+carve(nx,ny);
+}
+}
+}
+
+carve(1,1);
+return m;
+}
+
+/* RANDOM CHEESE */
+function placeCheese(){
+let empty=[];
+for(let y=0;y<grid;y++){
+for(let x=0;x<grid;x++){
+if(maze[y][x]==0 && !(x==1 && y==1)){
+empty.push({x,y});
+}
+}
+}
+return empty[Math.floor(Math.random()*empty.length)];
+}
+
+/* DRAW */
+function draw(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+for(let y=0;y<grid;y++){
+for(let x=0;x<grid;x++){
+ctx.fillStyle=maze[y][x]==1?"#333":"#eee";
+ctx.fillRect(x*size,y*size,size,size);
+}
+}
+
+ctx.font="20px Arial";
+ctx.fillText("🧀",cheese.x*size+5,cheese.y*size+20);
+ctx.fillText("🐭",player.x*size+5,player.y*size+20);
+}
+
+/* START */
+function start(){
+gameOver = false;
+moves=0;
+document.getElementById("moves").innerText=0;
+
+maze=generateMaze();
+player={x:1,y:1};
+cheese=placeCheese();
+
+document.getElementById("msg").innerText="";
+showCode("start");
+draw();
+}
+
+/* MOVE */
+function move(dx,dy,a){
+if(gameOver) return;
+let nx=player.x+dx;
+let ny=player.y+dy;
+
+if(nx<0||ny<0||nx>=grid||ny>=grid) return;
+
+if(maze[ny][nx] != 1){
+    moves++;
+    document.getElementById("moves").innerText = moves;
+
+    player.x = nx;
+    player.y = ny;
+    showCode(a);
+}else{
+    showCode("wall");
+}
+
+draw();
+check();
+}
+
+/* WIN */
+function check(){
+if(player.x==cheese.x && player.y==cheese.y){
+showCode("win");
+gameOver = true;
+document.getElementById("msg").innerText=`🎉 You Win in ${moves} moves!`;
+
+if(!best || moves<best){
+best=moves;
+localStorage.setItem("mouseBest",best);
+document.getElementById("best").innerText=best;
+}
+}
+}
+
+/* CONTROLS */
+let lastMove = 0;
+
+window.addEventListener("keydown",(e)=>{
+    let now = Date.now();
+    lastMove = now;
+if(e.key=="ArrowUp") move(0,-1,"up");
+if(e.key=="ArrowDown") move(0,1,"down");
+if(e.key=="ArrowLeft") move(-1,0,"left");
+if(e.key=="ArrowRight") move(1,0,"right");
+});
+
+start();
+
+</script>
+
+</body>
+</html>

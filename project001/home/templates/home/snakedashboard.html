@@ -1,0 +1,697 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snake Game</title>
+<link rel="stylesheet" href="{% static 'home/bootstrap/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'home/fontawesome/css/all.css' %}">
+<!-- -----------------------css--------------------------- -->
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background-image:url("{% static 'home/image/background2.png' %}");
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  width: 100%;
+}
+.main{
+  display:grid;
+  grid-template-columns:1fr 1.5fr 1fr;
+  gap:20px;
+  width:90%;
+  max-width:1100px;
+}
+.card{
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(10px);
+  padding:20px;
+  border-radius:20px;
+  text-align:justify;
+}
+canvas{
+  background:#fdfffc;
+  border-radius:10px;
+}
+pre{
+  background:#111;
+  padding:10px;
+  border-radius:10px;
+  height:240px;
+  overflow:auto;
+  text-align:left;
+  font-size:13px;
+}
+.tab{
+  padding:6px;
+  margin:3px;
+  background:#555;
+  border:none;
+  color:white;
+  cursor:pointer;
+  border-radius:8px;
+  
+}
+.tab.active{
+  background:cyan;
+  color:black;
+}
+.btn{
+  padding:8px 15px;
+  background:cyan;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+.btn:hover{
+  background-color:cyan;
+  color: #111;
+}
+.back-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+
+  border: none;
+  border-radius: 20px;
+  height: 60px;
+  width: 100px;
+  background: linear-gradient(45deg, #151e52, #00eeff);
+  color: rgb(252, 251, 251);
+  font-weight: bold;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.back-btn:hover {
+  background: #00ffff;
+  color: black;
+  box-shadow: 0 0 10px #00ffff,
+              0 0 20px #00ffff;
+  transform: scale(1.1);
+}
+#code{
+  height: 355px;
+}
+</style>
+</head>
+<body>
+<!-- ----------------------dashboard------------------- -->
+<div class="main">
+
+<!-- GAME -->
+<div class="card">
+<h2>🐍Snake logic Game</h2>
+
+<span>
+<p>
+Moves: <span id="moves">0 </span>
+| Score: <span id="score">0 </span>
+| Best: <span id="best">- </span>
+</p>
+</span>
+
+<canvas id="game" width="300" height="300"></canvas>
+
+<!-- <div id="msg"></div> -->
+ <br>
+
+<button class="btn" onclick="start()">Start</button>
+</div>
+
+<!-- CODE -->
+<div class="card">
+<h2>Code Viewer</h2>
+
+<span><button class="tab active" onclick="setLang('python',this)">Python</button>
+<button class="tab" onclick="setLang('java',this)">Java</button>
+<button class="tab" onclick="setLang('cpp',this)">C++</button>
+<button class="tab" onclick="setLang('c',this)">C</button></span>
+<br>
+<pre id="code"></pre>
+</div>
+
+<!-- INFO -->
+<div class="card">
+<h2>Game Info</h2>
+<p>Eat apple 🍎 and grow snake 💕</p>
+    <h6>Classic snake game with movement and collision logic!</h6>
+    <h6>🐍 Enjoy the classic snake game while learning how movement and collision logic works! Control the snake, collect points, and grow longer but don’t crash!</h6>
+
+</div>
+  <!-- back button -->
+  <a href="{% url 'game' %}"><button class="back-btn">Back</button></a>
+
+</div>
+<!-- -------------------javaScript-------------- -->
+<script>
+
+let canvas=document.getElementById("game");
+let ctx=canvas.getContext("2d");
+
+let size=20;
+let grid=15;
+
+let snake, food, dir, nextDir;
+let score=0, moves=0;
+
+let best=parseInt(localStorage.getItem("snakeBest"));
+document.getElementById("best").innerText=best?best:"-";
+
+let lang="python";
+let action="start";
+
+/* Game Viewer CODE------------------- */
+const codes = {
+
+start: {
+python: `# Initialize Snake Game
+import random
+
+WIDTH, HEIGHT = 15, 15
+snake = [(7,7)]
+direction = "RIGHT"
+
+def random_position():
+    return (random.randint(0, WIDTH-1), 
+    random.randint(0, HEIGHT-1))
+
+food = random_position()
+score = 0`,
+
+java: `// Initialize Snake Game
+import java.util.*;
+
+List<int[]> snake = new ArrayList<>();
+snake.add(new int[]{7,7});
+
+String direction = "RIGHT";
+Random rand = new Random();
+
+int foodX = rand.nextInt(15);
+int foodY = rand.nextInt(15);
+int score = 0;`,
+
+cpp: `// Initialize Snake Game
+#include <vector>
+#include <cstdlib>
+using namespace std;
+
+vector<pair<int,int>> snake;
+snake.push_back({7,7});
+
+string direction = "RIGHT";
+
+int foodX = rand()%15;
+int foodY = rand()%15;
+int score = 0;`,
+
+c: `// Initialize Snake Game
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Point { int x,y; };
+
+struct Point snake[100];
+int length = 1;
+
+snake[0].x = 7;
+snake[0].y = 7;
+
+char direction = 'R';
+
+int foodX = rand()%15;
+int foodY = rand()%15;
+int score = 0;`
+},
+
+up: {
+python: `# Move Up
+# Move Snake
+head = snake[0]
+
+if direction == "UP":
+    new_head = (head[0], head[1]-1)
+elif direction == "DOWN":
+    new_head = (head[0], head[1]+1)
+elif direction == "LEFT":
+    new_head = (head[0]-1, head[1])
+else:
+    new_head = (head[0]+1, head[1])
+
+snake.insert(0, new_head)
+snake.pop()`,
+
+java: `# Move Up
+// Move Snake
+int[] head = snake.get(0);
+int x = head[0], y = head[1];
+
+if(direction.equals("UP")) y--;
+else if(direction.equals("DOWN")) y++;
+else if(direction.equals("LEFT")) x--;
+else x++;
+
+snake.add(0, new int[]{x,y});
+snake.remove(snake.size()-1);`,
+
+cpp: `# Move Up
+// Move Snake
+auto head = snake[0];
+int x = head.first;
+int y = head.second;
+
+if(direction == "UP") y--;
+else if(direction == "DOWN") y++;
+else if(direction == "LEFT") x--;
+else x++;
+
+snake.insert(snake.begin(), {x,y});
+snake.pop_back();`,
+
+c: `# Move Up
+// Move Snake
+struct Point head = snake[0];
+
+int x = head.x;
+int y = head.y;
+
+if(direction == 'U') y--;
+else if(direction == 'D') y++;
+else if(direction == 'L') x--;
+else x++;
+
+for(int i=length;i>0;i--){
+    snake[i] = snake[i-1];
+}
+
+snake[0].x = x;
+snake[0].y = y;`
+},
+
+down: {
+python: `# Move Down
+# Move Snake
+head = snake[0]
+
+if direction == "UP":
+    new_head = (head[0], head[1]-1)
+elif direction == "DOWN":
+    new_head = (head[0], head[1]+1)
+elif direction == "LEFT":
+    new_head = (head[0]-1, head[1])
+else:
+    new_head = (head[0]+1, head[1])
+
+snake.insert(0, new_head)
+snake.pop()`,
+
+java: `# Move Down
+// Move Snake
+int[] head = snake.get(0);
+int x = head[0], y = head[1];
+
+if(direction.equals("UP")) y--;
+else if(direction.equals("DOWN")) y++;
+else if(direction.equals("LEFT")) x--;
+else x++;
+
+snake.add(0, new int[]{x,y});
+snake.remove(snake.size()-1);`,
+
+cpp: `# Move Down
+// Move Snake
+auto head = snake[0];
+int x = head.first;
+int y = head.second;
+
+if(direction == "UP") y--;
+else if(direction == "DOWN") y++;
+else if(direction == "LEFT") x--;
+else x++;
+
+snake.insert(snake.begin(), {x,y});
+snake.pop_back();`,
+
+c: `# Move Down
+// Move Snake
+struct Point head = snake[0];
+
+int x = head.x;
+int y = head.y;
+
+if(direction == 'U') y--;
+else if(direction == 'D') y++;
+else if(direction == 'L') x--;
+else x++;
+
+for(int i=length;i>0;i--){
+    snake[i] = snake[i-1];
+}
+
+snake[0].x = x;
+snake[0].y = y;`
+},
+
+left: {
+python: `# Move Left
+# Move Snake
+head = snake[0]
+
+if direction == "UP":
+    new_head = (head[0], head[1]-1)
+elif direction == "DOWN":
+    new_head = (head[0], head[1]+1)
+elif direction == "LEFT":
+    new_head = (head[0]-1, head[1])
+else:
+    new_head = (head[0]+1, head[1])
+
+snake.insert(0, new_head)
+snake.pop()`,
+
+java: `# Move Left
+// Move Snake
+int[] head = snake.get(0);
+int x = head[0], y = head[1];
+
+if(direction.equals("UP")) y--;
+else if(direction.equals("DOWN")) y++;
+else if(direction.equals("LEFT")) x--;
+else x++;
+
+snake.add(0, new int[]{x,y});
+snake.remove(snake.size()-1);`,
+
+cpp: `# Move Left
+// Move Snake
+auto head = snake[0];
+int x = head.first;
+int y = head.second;
+
+if(direction == "UP") y--;
+else if(direction == "DOWN") y++;
+else if(direction == "LEFT") x--;
+else x++;
+
+snake.insert(snake.begin(), {x,y});
+snake.pop_back();`,
+
+c: `# Move Left
+// Move Snake
+struct Point head = snake[0];
+
+int x = head.x;
+int y = head.y;
+
+if(direction == 'U') y--;
+else if(direction == 'D') y++;
+else if(direction == 'L') x--;
+else x++;
+
+for(int i=length;i>0;i--){
+    snake[i] = snake[i-1];
+}
+
+snake[0].x = x;
+snake[0].y = y;`
+},
+
+right: {
+python: `# Move Right
+# Move Snake
+head = snake[0]
+
+if direction == "UP":
+    new_head = (head[0], head[1]-1)
+elif direction == "DOWN":
+    new_head = (head[0], head[1]+1)
+elif direction == "LEFT":
+    new_head = (head[0]-1, head[1])
+else:
+    new_head = (head[0]+1, head[1])
+
+snake.insert(0, new_head)
+snake.pop()`,
+
+java: `# Move Right";
+// Move Snake
+int[] head = snake.get(0);
+int x = head[0], y = head[1];
+
+if(direction.equals("UP")) y--;
+else if(direction.equals("DOWN")) y++;
+else if(direction.equals("LEFT")) x--;
+else x++;
+
+snake.add(0, new int[]{x,y});
+snake.remove(snake.size()-1);`,
+
+cpp: `# Move Right
+// Move Snake
+auto head = snake[0];
+int x = head.first;
+int y = head.second;
+
+if(direction == "UP") y--;
+else if(direction == "DOWN") y++;
+else if(direction == "LEFT") x--;
+else x++;
+
+snake.insert(snake.begin(), {x,y});
+snake.pop_back();`,
+
+c: `# Move Right
+// Move Snake
+struct Point head = snake[0];
+
+int x = head.x;
+int y = head.y;
+
+if(direction == 'U') y--;
+else if(direction == 'D') y++;
+else if(direction == 'L') x--;
+else x++;
+
+for(int i=length;i>0;i--){
+    snake[i] = snake[i-1];
+}
+
+snake[0].x = x;
+snake[0].y = y;`
+},
+eat: {
+python: `# Eat Food
+if snake[0] == food:
+    score += 1
+    snake.append(snake[-1])
+    food = random_position()`,
+
+java: `// Eat Food
+int[] head = snake.get(0);
+
+if(head[0] == foodX && head[1] == foodY){
+    score++;
+    snake.add(snake.get(snake.size()-1));
+
+    foodX = rand.nextInt(15);
+    foodY = rand.nextInt(15);
+}`,
+
+cpp: `// Eat Food
+auto head = snake[0];
+
+if(head.first == foodX && head.second == foodY){
+    score++;
+    snake.push_back(snake.back());
+
+    foodX = rand()%15;
+    foodY = rand()%15;
+}`,
+
+c: `// Eat Food
+if(snake[0].x == foodX && snake[0].y == foodY){
+    score++;
+    snake[length] = snake[length-1];
+    length++;
+
+    foodX = rand()%15;
+    foodY = rand()%15;
+}`
+},
+
+gameOver: {
+python: `# Game Over Condition
+head = snake[0]
+
+if head in snake[1:]:
+    print("Game Over")`,
+
+java: `// Game Over
+int[] head = snake.get(0);
+
+for(int i=1;i<snake.size();i++){
+    if(Arrays.equals(head, snake.get(i))){
+        System.out.println("Game Over");
+    }
+}`,
+
+cpp: `// Game Over
+auto head = snake[0];
+
+for(int i=1;i<snake.size();i++){
+    if(snake[i] == head){
+        cout << "Game Over";
+    }
+}`,
+
+c: `// Game Over
+for(int i=1;i<length;i++){
+    if(snake[i].x == snake[0].x &&
+       snake[i].y == snake[0].y){
+        printf("Game Over");
+    }
+}`
+}
+
+};
+
+function setLang(l,btn){
+lang=l;
+document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");
+code.innerText=codes[action][lang];
+}
+
+function showCode(a){
+action=a;
+code.innerText=codes[a][lang];
+}
+
+/* START----------------------------------------*/
+function start(){
+snake=[{x:7,y:7}];
+dir={x:1,y:0};
+nextDir={x:1,y:0};
+
+score=0;
+moves=0;
+
+document.getElementById("score").innerText=0;
+document.getElementById("moves").innerText=0;
+
+placeFood();
+showCode("start");
+
+if(window.loop) clearInterval(window.loop);
+window.loop=setInterval(update,300);
+}
+
+/* FOOD-------------------------------------------*/
+function placeFood(){
+    do{
+        food={
+            x:Math.floor(Math.random()*grid),
+            y:Math.floor(Math.random()*grid)
+        };
+    } while(snake.some(s=>s.x==food.x && s.y==food.y));
+}
+/*DRAW (SNAKE + Apple)------------------------------ */
+function draw(){
+ctx.fillStyle="#fff";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+/* Snake---------------------------------------- */
+snake.forEach((s,i)=>{
+ctx.beginPath();
+ctx.fillStyle=i==0?"#00ffcc":"red";
+ctx.arc(s.x*size+10,s.y*size+10,8,0,Math.PI*2);
+ctx.fill();
+
+/* snake eyes-------------------------- */
+if(i==0){
+ctx.fillStyle="black";
+ctx.fillRect(s.x*size+6,s.y*size+6,2,2);
+ctx.fillRect(s.x*size+12,s.y*size+6,2,2);
+}
+});
+
+/*apple 🍎------------------------------ */
+ctx.font="20px Arial";
+ctx.fillText("🍎",food.x*size+2,food.y*size+18);
+}
+
+/* UPDATE */
+function update(){
+
+dir=nextDir;
+
+let head={
+x:snake[0].x+dir.x,
+y:snake[0].y+dir.y
+};
+
+/* collision */
+if(head.x<0||head.y<0||head.x>=grid||head.y>=grid ||
+snake.some(s=>s.x==head.x&&s.y==head.y)){
+showCode("gameOver");
+document.getElementById("msg").innerText="Game Over";
+clearInterval(window.loop);
+return;
+}
+
+snake.unshift(head);
+
+/* eat */
+if(head.x==food.x && head.y==food.y){
+score++;
+document.getElementById("score").innerText=score;
+
+if(!best || score>best){
+best=score;
+localStorage.setItem("snakeBest",best);
+document.getElementById("best").innerText=best;
+}
+
+showCode("eat");
+placeFood();
+}else{
+snake.pop();
+}
+
+draw();
+}
+
+/* CONTROLS */
+let lastMove=0;
+
+window.addEventListener("keydown",(e)=>{
+    let now=Date.now();
+    if(now-lastMove<100) return;
+    lastMove=now;
+if(e.key=="ArrowUp"){
+    showCode("up");
+    if(dir.y==0){ nextDir={x:0,y:-1}; moves++; }}
+if(e.key=="ArrowDown"){
+    showCode("down");
+    if(dir.y==0){ nextDir={x:0,y:1}; moves++; }}
+if(e.key=="ArrowLeft"){
+    showCode("left");
+    if(dir.x==0){ nextDir={x:-1,y:0}; moves++; }}
+if(e.key=="ArrowRight"){
+    showCode("right");
+    if(dir.x==0){ nextDir={x:1,y:0}; moves++; }}
+document.getElementById("moves").innerText=moves;
+});
+
+draw();
+
+</script>
+
+</body>
+</html>

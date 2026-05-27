@@ -1,0 +1,343 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Zone </title>
+    <link rel="stylesheet" href="{% static 'home/css/game.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Chela+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'home/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'home/fontawesome/css/all.css' %}">
+</head>
+<body>
+<!-- ----------------------Header---------------------------------- -->
+<header>
+  <a href="/">Home</a>
+  <a href="/game/">Game</a>
+  <a href="#" onclick="openModal()">Contact</a>
+  {% if user.is_authenticated %}
+  <div class="user-badge" onclick="openProfile()">
+    <div class="user-avatar">
+      {% if user.profile.image %}
+      <img src="{{ user.profile.image.url }}" id="navProfileImg">
+      {% else %}
+      <img src="{% static 'home/image/default.png' %}" id="navProfileImg">
+      {% endif %}
+    </div>
+    <div class="user-info">
+      <span class="user-name">{{ user.username }}</span>
+      <span class="user-profession">{{ user.profile.profession|default:"Gamer" }}</span>
+    </div>
+  </div>
+  {% else %}
+  <button class="login-btn" onclick="openLogin()">Login / Register</button>
+  {% endif %} 
+</header>
+<!-----------------------Contact Modal----------------------------->
+<div id="contactModal">
+  <h2>CONTACT US</h2>
+  <p>Email: swatigarewal35@gmail.com</p>
+  <p>Phone: +91 7587296807</p>
+  <p>Linkedln: swati-garewal-57189b263</p>
+  <button style="background-color: aqua; border-radius: 20px;" onclick="closeModal()">Close</button>
+</div>
+<!-- --------------------Profile Modal---------------------- -->
+<div id="profileModal" tabindex="0">
+  <div id="formSection">
+    <h2>PROFILE UPDATE</h2>
+    <input type="file" id="imageInput"><br><br>
+    <img id="preview" width="80">
+    <p style="color: rgb(255, 255, 21); text-align: center;">click & scroll down</p>
+    <input type="text" id="name" name="username" value="{{ user.username }}" placeholder="Name"><br>
+    <input type="email" id="email" name="email" value="{{ user.email }}" placeholder="Email"><br>    
+    <input type="text" id="mobile" placeholder="Mobile"><br>
+    <select id="gender">
+      <option value="">Gender</option>
+      <option>Male</option>
+      <option>Female</option>
+    </select><br>
+    <input type="date" id="dob"><br>
+    <input type="text" id="profession" value="{{ user.profession }}"  placeholder="Profession"><br><br>
+    <button onclick="saveProfileToServer()">Save</button>
+    <button style="background-color: aqua; border-radius: 20px;" onclick="closeProfile()">Close</button>
+    <a href="{% url 'logout' %}"><button style="background-color: aqua; border-radius: 20px;">Logout</button></a>
+  </div>
+<!-------------------- Profile View ------------------------>
+  <div id="profileView" style="display:none;">
+    <h2><center>MY PROFILE</center></h2>
+    <img id="viewImg" width="100"><br>
+    <p id="viewName"></p>
+    <p id="viewEmail"></p>
+    <p id="viewMobile"></p>
+    <p id="viewGender"></p>
+    <p id="viewDob"></p>
+    <p id="viewProfession"></p>
+    <button style="background-color: aqua; border-radius: 20px;" onclick="editProfile()">Edit</button>
+    <button style="background-color: aqua; border-radius: 20px;"  onclick="closeProfile()">Close</button>
+    <a href="{% url 'logout' %}"><button style="background-color: aqua; border-radius: 20px;">Logout</button></a>
+  </div>
+</div>   
+<!-- --------------------Login/Register Modal ------------------------->
+<div id="loginModal">
+  <div id="loginSection">
+    <h2>Login</h2>
+    {% if messages %}
+    {% for message in messages %}
+    <p style="color:#63ff2f;">{{ message }}</p>
+    {% endfor %}
+    {% endif %}
+    <form method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.path }}"> 
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>      
+      <button type="submit">Login</button>
+    </form>
+    <p>Don't have account? 
+      <span onclick="showRegister()"><u style="color: blue;">Register</u></span>
+    </p>
+  </div>
+  <div id="registerSection" style="display:none;">
+    <h2>Register</h2>
+    <form method="POST" action="{% url 'register' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.path }}"> 
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="password" placeholder="Password" required>    
+      <button type="submit" onclick="showLogin()">Register</button>
+    </form>
+    <p>Already have account? 
+      <span onclick="showLogin()"><u style="color: blue;">Login</u></span>
+    </p>
+  </div>
+  <button onclick="closeLogin()">Close</button>
+</div>
+<div id="overlay" onclick="closeModal(); closeProfile(); closeLogin();"></div>
+<!-- -----------Content-------------------------------- -->
+<div id="background">
+    <div class="container">
+        <div class="center-logo">
+            <img src="{% static 'home/image/logo.png' %}" alt="Logo">
+        </div>
+        <div class="box top-left">Memory Match Game<br>
+            <img src="{% static 'home/image/card.gif' %}" height="100" width="100">
+            {% if user.is_authenticated %}
+            <a href="{% url 'matchdashboard' %}"><button class="play">Start Game</button></a>
+            {% else %}
+            <button class="play" onclick="openLogin()">Start Game</button>
+            {% endif %}
+        </div>
+        <div class="box top-right">Mouse Maze Game<br>
+            <img src="{% static 'home/image/maze.gif' %}" height="100" width="100">
+            {% if user.is_authenticated %}
+            <a href="{% url 'mousedashboard' %}"><button class="play">Start Game</button></a>
+            {% else %}
+            <button class="play" onclick="openLogin()">Start Game</button>
+            {% endif %}
+        </div>
+        <div class="box left">Tic Tac Toe Game<br>
+            <img src="{% static 'home/image/tic.gif' %}" height="100" width="100">
+            {% if user.is_authenticated %}
+            <a href="{% url 'tttdashboard' %}"><button class="play">Start Game</button></a>
+            {% else %}
+            <button class="play" onclick="openLogin()">Start Game</button>
+            {% endif %}
+        </div>
+        <div class="box right">Snake Bite Game<br>
+            <img src="{% static 'home/image/snake.gif' %}" height="100" width="100">
+            {% if user.is_authenticated %}
+            <a href="{% url 'snakedashboard' %}"><button class="play">Start Game</button></a>
+            {% else %}
+            <button class="play" onclick="openLogin()">Start Game</button>
+            {% endif %}
+        </div>
+        <div class="box bottom-center">Quiz Game<br>
+            <img src="{% static 'home/image/quiz.gif' %}" height="100" width="100">
+            {% if user.is_authenticated %}
+            <a href="{% url 'quiz' %}"><button class="play">Start Game</button></a>
+            {% else %}
+            <button class="play" onclick="openLogin()">Start Game</button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<!-- --------------------------Java script----------------------- -->
+<script>
+//-----------------------Contact Modal-------------------------
+function openModal() {
+  const modal = document.getElementById("contactModal");
+  const overlay = document.getElementById("overlay");
+  
+  modal.style.display = "block"; // Pehle display block karein
+  overlay.style.display = "block";
+
+  // Browser ko render karne ka time dein phir class add karein
+  requestAnimationFrame(() => {
+    modal.classList.add("show");
+  });
+}
+function closeModal() {
+  document.getElementById("contactModal").style.display = "none";
+  document.getElementById("overlay").style.display = "none";
+  document.getElementById("contactModal").classList.remove("show");
+}
+document.getElementById("contactModal").onclick = function(event) {
+    event.stopPropagation();
+};
+//-----------------------Profile Modal-------------------------------
+function openProfile() {
+    const modal = document.getElementById("profileModal");
+    modal.style.display = "block";
+    document.getElementById("overlay").style.display = "block";
+    setTimeout(() => modal.classList.add("show"), 10);
+    
+    loadProfileData();
+}
+function closeProfile() {
+  const modal = document.getElementById("profileModal");
+  modal.style.display = "none";
+  document.getElementById("overlay").style.display = "none";
+  modal.classList.remove("show");
+}
+document.getElementById("profileModal").onclick = function(event) {
+    event.stopPropagation();
+};
+//----------------------Image Preview
+document.getElementById("imageInput").addEventListener("change", function() {
+  const file = this.files[0];
+  const reader = new FileReader();
+  reader.onload = function() {
+    document.getElementById("preview").src = reader.result;
+  }
+  if(file) reader.readAsDataURL(file);
+});
+//----------------------Save Profile
+async function loadProfileData() {
+    try {
+        const response = await fetch('/accounts/get_profile/'); 
+        const data = await response.json();
+        
+        if (response.ok) {
+            // Check karein ki kya user ne pehle kabhi profile save ki hai (e.g., profession ya mobile fill kiya hai)
+            if (data.mobile || data.email) {
+                document.getElementById('formSection').style.display = 'none';
+                document.getElementById('profileView').style.display = 'block';
+                
+                // View fields fill karein
+                document.getElementById('viewName').innerText = "Name: " + (data.name || "N/A");
+                document.getElementById('viewEmail').innerText = "Email: " + (data.email || "N/A");
+                document.getElementById('viewMobile').innerText = "Mobile: " + (data.mobile || "N/A");
+                document.getElementById('viewGender').innerText = "Gender: " + (data.gender || "N/A");
+                let dob = data.dob;
+                if(dob){
+                  let parts = dob.split("-");
+                  dob = parts[2] + "-" + parts[1] + "-" + parts[0];
+                       }
+                document.getElementById('viewDob').innerText = "DOB: " + (dob || "N/A");
+                document.getElementById('viewProfession').innerText = "Profession: " + (data.profession || "Gamer");
+                if(data.image_url) {
+                    document.getElementById('viewImg').src = data.image_url;
+                }
+            }   else {
+                // Bilkul naya user hai toh Update Profile (Form) dikhao
+                document.getElementById('formSection').style.display = 'block';
+                document.getElementById('profileView').style.display = 'none';
+            }
+        }
+    } catch (e) {
+        document.getElementById('formSection').style.display = 'block';
+    }
+}
+async function saveProfileToServer() {
+    let formData = new FormData();
+    
+    // HTML IDs ke hisaab se values pick karein
+    formData.append("name", document.getElementById('name').value);
+    formData.append("email", document.getElementById('email').value);
+    formData.append("mobile", document.getElementById('mobile').value);
+    formData.append("gender", document.getElementById('gender').value);
+    formData.append("dob", document.getElementById('dob').value);
+    formData.append("profession", document.getElementById('profession').value);
+    
+    const imgInput = document.getElementById('imageInput');
+    if(imgInput.files[0]) {
+        formData.append("image", imgInput.files[0]);
+    }
+
+    const response = await fetch('/accounts/save_profile/', { // views.py ke path ke hisaab se
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.status === "success") {
+        alert("Profile Saved Successfully ✅");
+        // Save hone ke baad page reload karein taaki header badge update ho jaye
+        location.reload(); 
+    } else {
+        alert("Error saving data ❌");
+    }
+}
+//----------------------Edit Profile------------------------------------
+function editProfile() {
+  document.getElementById("profileView").style.display = "none";
+  document.getElementById("formSection").style.display = "block";
+}
+// ---------------------login/Register---------------------------
+function openLogin() {
+    const modal = document.getElementById("loginModal");
+    modal.style.display = "block";
+    document.getElementById("overlay").style.display = "block";
+    document.getElementById("loginSection").style.display = "block";
+    document.getElementById("registerSection").style.display = "none";
+    setTimeout(() => {
+    modal.classList.add("show");
+  }, 10);
+}
+function closeLogin() {
+  const modal = document.getElementById("loginModal");
+  modal.style.display = "none";
+  document.getElementById("overlay").style.display = "none";
+  modal.classList.remove("show");
+}
+document.getElementById("loginModal").onclick = function(event) {
+    event.stopPropagation();
+};
+function showLogin() {
+  document.getElementById("registerSection").style.display = "none";
+  document.getElementById("loginSection").style.display = "block";
+}
+function showRegister() {
+  document.getElementById("loginSection").style.display = "none";
+  document.getElementById("registerSection").style.display = "block";
+}
+// -------------------------User Name identification----------------
+function getCookie(name) {
+    let value = null;
+    if (document.cookie) {
+        let cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                value = decodeURIComponent(cookie.substring(name.length + 1));
+            }
+        }
+    }
+    return value;
+}
+window.addEventListener("load", function(){
+    const params = new URLSearchParams(window.location.search);
+
+    if(params.get("showLogin") === "true"){
+        openLogin();
+    }
+});
+</script>
+</body>
+</html>

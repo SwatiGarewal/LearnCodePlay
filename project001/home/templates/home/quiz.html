@@ -1,0 +1,308 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Dashboard</title>
+<link rel="stylesheet" href="{% static 'home/bootstrap/css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'home/fontawesome/css/all.css' %}">
+<!-- -------------------css------------------------------ -->
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:url("{% static 'home/image/background2.png' %}");
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  width: 100%;
+}
+.main{
+  display:grid;
+  grid-template-columns:1fr 2fr;
+  gap:20px;
+  width:90%;
+  max-width:900px;
+  height:90vh;
+}
+.card{
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(10px);
+  padding:20px;
+  border-radius:20px;
+  text-align:center;
+}
+.btn{
+  padding:10px;
+  margin:5px;
+  width:100%;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  background:#00ffff;
+}
+ .btn:hover{
+  background-color:#15ff00;
+  color: #111;
+}
+#question{
+  background:rgba(0,0,0,0.3);
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:10px;
+}
+
+.option{
+  background:#fff;
+  color:black;
+  margin:5px;
+  padding:10px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.option:hover{
+  background:#00ffff;
+}
+
+.selected{
+  background:#00ff99 !important;
+}
+
+.correct{
+  background:lightgreen !important;
+}
+
+.wrong{
+  background:#ff7b7b !important;
+}
+.back-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  border: none;
+  border-radius: 20px;
+  height: 60px;
+  width: 100px;
+  background: linear-gradient(45deg, #151e52, #00eeff);
+  color: rgb(252, 251, 251);
+  font-weight: bold;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.back-btn:hover {
+  background: #00ffff;
+  color: black;
+  box-shadow: 0 0 10px #00ffff,
+              0 0 20px #00ffff;
+  transform: scale(1.1);
+}
+</style>
+</head>
+<body>
+<!-- ----------------------dashboard--------------------------->
+<div class="main">
+  <div class="card">
+    <h2>Select Language</h2>
+    <button class="btn" onclick="startQuiz('python')">Python</button>
+    <button class="btn" onclick="startQuiz('java')">Java</button>
+    <button class="btn" onclick="startQuiz('c')">C</button>
+    <button class="btn" onclick="startQuiz('cpp')">C++</button>
+  </div>
+  <div class="card">
+    <h2 id="title">Quiz Game</h2>
+    <p id="qno"></p>
+    <div id="question">Select language</div>
+    <div id="options"></div>
+    <p>Score: <span id="score">0</span></p>
+  </div>
+  <a href="{% url 'game' %}"><button class="back-btn">Back</button></a>
+</div>
+<!-- -----------------------javascript------------------- -->
+<script>
+let questions=[], index=0, score=0;
+let userAnswers=[];
+
+/* SHUFFLE */
+function shuffle(a){
+for(let i=a.length-1;i>0;i--){
+let j=Math.floor(Math.random()*(i+1));
+[a[i],a[j]]=[a[j],a[i]];
+}
+}
+
+/* ALL DATA */
+const quizData={
+
+python:[
+{q:"Python is a high-level programming language used for?",o:["System programming","Web, AI, Data Science","Hardware design","None"],a:1},
+{q:"Keyword for function?",o:["def","fun","void","function"],a:0},
+{q:"Mutable type?",o:["Tuple","String","List","Integer"],a:2},
+{q:"File extension?",o:[".py",".java",".c",".cpp"],a:0},
+{q:"Loop?",o:["for","repeat","iterate","loop"],a:0},
+{q:"Boolean?",o:["True","Yes","1","On"],a:0},
+{q:"Comment symbol?",o:["#","//","--","/*"],a:0},
+{q:"Print function?",o:["print()","echo","cout","printf"],a:0},
+{q:"List syntax?",o:["[]","{}","()","<>"],a:0},
+{q:"Indentation used for?",o:["Blocks","Style","Comments","None"],a:0}
+],
+
+java:[
+{q:"Java supports?",o:["OOP","Procedural","None","Both"],a:0},
+{q:"Entry point?",o:["main()","start","run","init"],a:0},
+{q:"Print?",o:["System.out.println","print","echo","cout"],a:0},
+{q:"Extension?",o:[".java",".py",".c",".cpp"],a:0},
+{q:"Class keyword?",o:["class","define","struct","object"],a:0},
+{q:"Boolean type?",o:["boolean","bool","truefalse","bit"],a:0},
+{q:"Loop?",o:["for","repeat","iterate","loop"],a:0},
+{q:"JVM?",o:["Java Virtual Machine","Java Value","None","Both"],a:0},
+{q:"Package?",o:["Collection of classes","Variable","Loop","None"],a:0},
+{q:"Compiled into?",o:["Bytecode","Machine code","Binary","None"],a:0}
+],
+
+c:[
+{q:"C is a?",o:["Compiled","Interpreted","Both","None"],a:0},
+{q:"Entry function?",o:["main()","start","run","init"],a:0},
+{q:"Print function?",o:["printf","cout","print","echo"],a:0},
+{q:"Header file?",o:["stdio.h","java.h","py.h","none"],a:0},
+{q:"Loop?",o:["for","repeat","iterate","loop"],a:0},
+{q:"Pointers supported?",o:["Yes","No","Maybe","None"],a:0},
+{q:"Comment style?",o:["//","/* */","#","--"],a:1},
+{q:"Language type?",o:["Low level","High level","Both","None"],a:2},
+{q:"Array exists?",o:["Yes","No","Maybe","None"],a:0},
+{q:"Compile required?",o:["Yes","No","Maybe","None"],a:0}
+],
+
+cpp:[
+{q:"C++ supports OOP?",o:["Yes","No","Maybe","None"],a:0},
+{q:"Output?",o:["cout","printf","print","echo"],a:0},
+{q:"Header file?",o:["iostream","stdio.h","none","java"],a:0},
+{q:"Classes supported?",o:["Yes","No","Maybe","None"],a:0},
+{q:"Loop?",o:["for","repeat","iterate","loop"],a:0},
+{q:"Namespace?",o:["std","main","core","sys"],a:0},
+{q:"C++ derived from?",o:["C","Java","Python","None"],a:0},
+{q:"Constructor?",o:["Yes","No","Maybe","None"],a:0},
+{q:"Compiled language?",o:["Yes","No","Maybe","None"],a:0},
+{q:"Pointers?",o:["Yes","No","Maybe","None"],a:0}
+]
+
+};
+
+/* START */
+function startQuiz(lang){
+document.getElementById("question").innerText = "";
+document.getElementById("options").innerHTML = "";
+questions=[...quizData[lang]];
+shuffle(questions);
+
+index=0;
+score=0;
+userAnswers=[];
+
+document.getElementById("title").innerText=lang.toUpperCase()+" Quiz";
+document.getElementById("score").innerText=0;
+
+loadQuestion();
+}
+
+/* LOAD */
+function loadQuestion(){
+let q=questions[index];
+
+document.getElementById("qno").innerText=
+"Question "+(index+1)+" / "+questions.length;
+
+document.getElementById("question").innerText=q.q;
+
+let opt="";
+q.o.forEach((o,i)=>{
+opt+=`<div class="option" onclick="select(this,${i})">${o}</div>`;
+});
+
+document.getElementById("options").innerHTML=opt;
+}
+
+/* SELECT */
+function select(el,i){
+if(userAnswers[index] !== undefined) return;
+document.querySelectorAll(".option").forEach(o=>o.classList.remove("selected"));
+el.classList.add("selected");
+
+userAnswers[index]=i;
+
+if(i===questions[index].a){
+score++;
+document.getElementById("score").innerText=score;
+}
+
+/* SHOW RESULT COLORS */
+setTimeout(()=>{
+let options = document.querySelectorAll(".option");
+
+options.forEach(o => o.style.pointerEvents = "none");
+
+options.forEach((op,idx)=>{
+if(idx===questions[index].a){
+op.classList.add("correct");
+}
+else if(idx===i){
+op.classList.add("wrong");
+}
+});
+
+/* AUTO NEXT */
+setTimeout(()=>{
+nextQuestion();
+},800);
+
+},300);
+
+}
+
+/* NEXT */
+function nextQuestion(){
+index++;
+
+if(index<questions.length){
+loadQuestion();
+}else{
+showResult();
+}
+}
+
+/* RESULT */
+function showResult(){
+let html=`<h2>🎉 Result</h2>
+<p><b>${score} / ${questions.length}</b></p><hr>`;
+
+questions.forEach((q,i)=>{
+
+let user=userAnswers[i];
+
+if(user===q.a){
+html+=`<p>Q${i+1}: ${q.q}</p>
+<p style="color:lightgreen;">✅ Correct</p><hr>`;
+}
+
+else{
+html+=`<p>Q${i+1}: ${q.q}</p>
+<p style="color:red;">❌ Your: ${q.o[user] || "Not Answered"}</p>
+<p style="color:lightgreen;">✅ Correct: ${q.o[q.a]}</p><hr>`;
+}
+});
+html += `<button class="btn" onclick="location.reload()">Restart Quiz</button>`;
+
+document.getElementById("question").innerHTML=html;
+document.getElementById("options").innerHTML="";
+document.getElementById("qno").innerText="";
+}
+
+</script>
+
+</body>
+</html>
