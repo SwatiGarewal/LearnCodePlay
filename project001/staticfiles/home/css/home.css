@@ -1,0 +1,975 @@
+/* ==================== 🎮 GOOGLE FONTS IMPORTS ==================== */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
+/* ----------- Body & Global Reset -------------------------------------- */
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  font-family: "Share Tech Mono", monospace;
+  background: #000;
+}
+
+/*----------- Background Area --------------------------------- */
+.background {
+  width: 100%;
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  animation: bgChange 15s infinite linear;
+  display: flex;
+  flex-direction: column;
+}
+
+/*----------- Background Animation of images ------------------------ */
+@keyframes bgChange {
+  0% { background-image: url("/static/home/image/background1.png"); }
+  30% { background-image: url("/static/home/image/background2.png"); }
+  66% { background-image: url("/static/home/image/background2.png"); }
+  100% { background-image: url("/static/home/image/background1.png"); }
+}
+
+/* ------------------- Header Layout ------------------------------------------------------- */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  padding: 0 25px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+header .nav-links {
+  display: flex;
+  gap: 60px;
+  align-items: center;
+}
+
+header img {
+  width: 150px;
+  height: auto;
+  transition: transform 0.4s ease;
+  animation: float 3s ease-in-out infinite;
+  margin-top: 50px;
+}
+
+header img:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 10px #00ffff) drop-shadow(0 0 20px #00ffff);
+}
+
+header a {
+  color: white !important;
+  text-decoration: none;
+  margin: 0;
+  font-family: "Orbitron", sans-serif;
+  font-size: 20px;
+  letter-spacing: 1px;
+  transition: 0.3s ease;
+}
+
+header a:hover {
+  background: #00ffff !important;
+  color: black !important;
+  box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff;
+  border-radius: 20px;
+  padding: 5px 15px;
+}
+
+.login-btn {
+  padding: 8px 25px;
+  background: rgb(242, 223, 10);
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-family: "Orbitron", sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: black;
+  transition: 0.3s ease;
+}
+
+.login-btn:hover {
+  background: #00ffff;
+  box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff;
+}
+
+/* ------------------------ 🎯 Profile Badge & Top-Right Avatar ---------------------------- */
+.user-badge {
+  display: flex;
+  align-items: center;
+  background: #1b0221;
+  padding: 6px 15px 6px 6px;
+  border-radius: 50px;
+  cursor: pointer;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  width: 250px;
+}
+
+.user-badge:hover {
+  box-shadow: 0 0 25px #00ffff;
+}
+
+/* Container Circle for Header Avatar */
+header .user-badge .user-avatar {
+  width: 45px !important;
+  height: 45px !important;
+  min-width: 45px !important;
+  min-height: 45px !important;
+  border-radius: 50% !important;
+  border: 2px solid #00ffff !important;
+  overflow: hidden !important;
+  margin-right: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #0b111e !important;
+}
+
+/* Inside Image Full Fit Fix (No Crop/No Head Cut) */
+header .user-badge .user-avatar img#navProfileImg {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important; /* 🌟 Full Image Fit */
+  object-position: center !important;
+  background-color: #0b111e !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  color: hsl(180, 100%, 98%);
+}
+
+.user-name {
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: "Orbitron", sans-serif;
+  text-align: center;
+}
+
+.user-profession {
+  color: #00ffff;
+  font-size: 12px;
+  text-transform: capitalize;
+  text-align: center;
+}
+
+/*------------------ Modals Background Layer -----------------------------------------*/
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10;
+  display: none;
+}
+
+/* ------------------🎯 MODALS RESTRUCTURED --------------------------------------------- */
+#contactModal,
+#loginModal,
+#profileModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  width: 90% !important;
+  max-width: 380px !important;
+  padding: 25px;
+  border-radius: 25px;
+  backdrop-filter: blur(15px);
+  z-index: 20;
+  display: none;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#contactModal.show,
+#loginModal.show,
+#profileModal.show {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+#contactModal,
+#loginModal {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+  text-align: center;
+  color: white;
+}
+
+#profileModal {
+  background: rgba(12, 11, 11, 0.93) !important;
+  max-height: 80vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  border: 2px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+#profileModal::-webkit-scrollbar { display: none; }
+
+#profileModal:hover,
+#profileModal:focus-within {
+  border: 2px solid #00ffff !important;
+  box-shadow: 0 0 25px #00ffff, 0 0 50px rgba(0, 255, 255, 0.5) !important;
+}
+
+#contactModal h2,
+#loginModal h2,
+#profileModal h2 {
+  font-family: "Orbitron", sans-serif;
+  font-size: 26px;
+  margin-bottom: 15px;
+  text-shadow: 0 0 10px #00ffff;
+  color: white;
+}
+
+#contactModal p,
+#profileView p {
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: #00ffff;
+}
+
+#profileModal input,
+#profileModal select,
+#loginModal input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(14, 13, 13, 0.9);
+  color: white;
+  outline: none;
+  font-family: "Share Tech Mono", monospace;
+  transition: 0.3s;
+}
+
+#profileModal input:focus,
+#loginModal input:focus {
+  background: rgba(0, 255, 255, 0.15);
+  border-color: #00ffff;
+  box-shadow: 0 0 10px #00ffff;
+}
+
+#contactModal button,
+#profileModal button,
+#loginModal button {
+  margin: 10px 5px;
+  padding: 10px 22px;
+  border-radius: 20px;
+  border: none;
+  background: #00ffff;
+  color: black;
+  font-weight: bold;
+  font-family: "Orbitron", sans-serif;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#contactModal button:hover,
+#profileModal button:hover,
+#loginModal button:hover {
+  background: #00c3ff;
+  box-shadow: 0 0 15px #00ffff;
+}
+
+/* 🎯 Modal & Preview Profile Picture Styling (Zero Head Cut / Full Contain) */
+#profileModal img,
+#profileView img,
+#viewImg,
+#preview {
+  width: 130px !important;
+  height: 130px !important;
+  border-radius: 50% !important;
+  object-fit: contain !important; /* 🌟 Image ka koi bhi kona nahi kaatega */
+  object-position: center !important;
+  background-color: #0b111e !important;
+  display: block !important;
+  margin: 15px auto !important;
+  border: 4px solid #00ffff !important;
+  box-shadow: 0 0 15px #00ffff !important;
+}
+
+#profileView p {
+  margin: 8px 0;
+  text-align: left;
+  padding-left: 20px;
+}
+
+/* -----------------🎯 HERO CONTENT MAIN BOX AREA --------------------------------- */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding-top: 100px;
+  text-align: center;
+  color: white;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.welcome {
+  font-family: "Orbitron", sans-serif;
+  font-size: 6vw;
+  font-weight: 900;
+  margin-bottom: 10px;
+  text-shadow: 0 0 5px #00f7ff, 0 0 15px hsl(84, 100%, 50%), 0 0 30px #00f7ff;
+  color: #f1fd47;
+}
+
+.title {
+  font-family: "Orbitron", sans-serif;
+  font-size: 7vw;
+  font-weight: bold;
+  margin-top: 0px;
+  margin-bottom: 30px;
+  transition: transform 0.4s ease;
+  cursor: default;
+}
+
+.title:hover { transform: scale(1.05); }
+
+.learn {
+  color: #fffb00;
+  text-shadow: 0 0 10px hsl(33, 98%, 66%), 0 0 20px rgb(255, 230, 0);
+}
+.code {
+  color: #00ffff;
+  text-shadow: 0 0 10px hsl(206, 100%, 50%), 0 0 20px #00ffff;
+}
+.play {
+  color: #ff6200;
+  text-shadow: 0 0 10px #ff8800, 0 0 20px #ff8800;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+#startBtn {
+  display: none;
+  margin-top: 25px; 
+}
+
+.start-btn {
+  display: none;
+  margin-top: 25px;
+  padding: 14px 40px;
+  border: none;
+  background: #ebff34;
+  color: black;
+  cursor: pointer;
+  transition: 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+  border-radius: 30px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.start-btn:hover {
+  box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
+  background: hsl(179, 100%, 55%);
+  transform: translateY(-3px);
+}
+
+/* -------------------- Footer ----------------------------------------- */
+footer {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  text-align: center;
+  padding: 25px 10px;
+  z-index: 999;
+  font-size: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Float Keyframes Animation Definition */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* 🪐 ==================== FIXED PATH DYNAMIC NEON ORBIT SYSTEM ==================== */
+.orbit-container {
+  position: relative;
+  width: 100%;
+  min-height: 700px;
+  overflow: visible;
+  padding: 80px 20px;
+  background: transparent !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Center Core */
+.center-hub {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, #1a2639 0%, #0b111e 100%);
+  border: 2px solid #00d2ff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 210, 255, 0.4);
+  z-index: 10;
+  overflow: hidden;
+}
+
+.center-hub h2 {
+  color: #fff;
+  font-size: 1.2rem;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
+  line-height: 1.3;
+}
+
+.center-hub h2 span {
+  color: #fbff1f;
+  text-shadow: 0 0 10px #5eff00;
+}
+
+/* The Fixed Orbit Ring Track */
+.orbit-ring {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+}
+
+/* Base style for each static game container */
+.game-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120px;
+  height: 70px;
+  margin-top: -35px;
+  margin-left: -60px;
+}
+
+/* Math Angular Splits for Fixed Pathing Layout */
+.game-item:nth-child(1) { transform: rotate(0deg) translate(225px) rotate(0deg); }
+.game-item:nth-child(2) { transform: rotate(72deg) translate(225px) rotate(-72deg); }
+.game-item:nth-child(3) { transform: rotate(144deg) translate(225px) rotate(-144deg); }
+.game-item:nth-child(4) { transform: rotate(216deg) translate(225px) rotate(-216deg); }
+.game-item:nth-child(5) { transform: rotate(288deg) translate(225px) rotate(-288deg); }
+
+/* The Game Visual Box Card */
+.game-box {
+  width: 100%;
+  height: 100%;
+  background: rgba(19, 25, 35, 0.9);
+  border: 1px solid rgba(34, 47, 71, 0.7);
+  border-radius: 12px;
+  color: #a0aec0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  padding: 5px;
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.game-item.active .game-box {
+  color: #ffffff;
+  border-color: #edf112;
+  box-shadow: 0 0 25px rgba(100, 252, 12, 0.8), inset 0 0 10px rgba(255, 140, 0, 0.2);
+  transform: scale(1.18);
+  background: #1b2230;
+}
+
+/* ==================== 🎮 GAME CARDS HORIZONTAL SLIDER ==================== */
+.game-slider-section {
+  background: transparent !important;
+  padding: 40px 20px;
+  width: 100%;
+}
+
+.slider-container {
+  position: relative;
+  max-width: 1250px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.game-cards-wrapper {
+  display: flex;
+  gap: 25px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 20px 10px;
+  scrollbar-width: none;
+}
+
+.game-cards-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.game-card {
+  flex: 0 0 300px;
+  width: 300px;
+  background: #111625;
+  border: 1px solid #1f293d;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.5s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 8px 20px rgb(31, 232, 246);
+}
+
+.game-card:hover {
+  transform: translateY(-10px);
+  border-color: #00ffff;
+  box-shadow: 0 0 20px rgba(41, 255, 127, 0.999);
+}
+
+.card-image {
+  height: 150px;
+  background: #f9f7f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #1f293d;
+}
+
+.card-image img {
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.game-card:hover .card-image img {
+  transform: scale(1.1);
+}
+
+.card-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.card-content h3 {
+  margin: 0 0 8px 0;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 18px;
+  color: #00ffff;
+}
+
+.card-content p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #94a3b8;
+  margin-bottom: 15px;
+}
+
+.card-footer {
+  border-top: 1px solid #1e293b;
+  padding-top: 12px;
+  margin-top: auto;
+}
+
+.comment-count-btn {
+  font-size: 13px;
+  color: #00ffff;
+  cursor: pointer;
+  display: inline-block;
+  margin-bottom: 10px;
+  user-select: none;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.comment-count-btn:hover {
+  text-decoration: underline;
+}
+
+.comments-dropdown {
+  max-height: 120px;
+  overflow-y: auto;
+  background: #090d16;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.comments-dropdown.hidden {
+  display: none;
+}
+
+.single-comment {
+  background: #151c2e;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  border-left: 3px solid #2ea44f;
+  color: #e2e8f0;
+  font-size: 12px;
+  word-break: break-word;
+}
+
+.comment-user {
+  color: #f1fd47;
+  font-weight: bold;
+  font-size: 11px;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.comment-input-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.comment-input {
+  width: 100%;
+  padding: 8px 12px;
+  background: #090d16;
+  border: 1px solid #1e293b;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 12px;
+  outline: none;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.comment-input:focus {
+  border-color: #00ffff;
+}
+
+.btn-comment {
+  background: #2ea44f;
+  color: #ffffff;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.btn-comment:hover {
+  background: #238636;
+}
+
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  background: rgba(17, 22, 37, 0.9);
+  border: 1px solid #00ffff;
+  color: #00ffff;
+  font-size: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.scroll-btn:hover {
+  background: #00ffff;
+  color: #000;
+  box-shadow: 0 0 15px #00ffff;
+}
+
+.left-btn { left: -15px; }
+.right-btn { right: -15px; }
+
+/* Password Input Container */
+.password-container {
+  position: relative;
+  width: 100%;
+  margin-bottom: 15px;
+  display: inline-block;
+}
+
+.password-container input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #00ffff;
+  z-index: 10;
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+}
+
+/* ==================== CUSTOM GAME NOTIFICATION TOAST ==================== */
+.game-toast {
+  position: fixed;
+  top: 20px;
+  right: -450px;
+  background: linear-gradient(135deg, #111936, #070b19);
+  border: 2px solid #00ffff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.6), inset 0 0 10px rgba(0, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 99999;
+  font-family: 'Courier New', Courier, monospace;
+  transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  min-width: 325px;
+}
+
+.game-toast.show {
+  right: 20px;
+}
+
+.game-toast-icon {
+  font-size: 24px;
+  color: #00ffff;
+  animation: toastGlow 1.5s ease-in-out infinite alternate;
+}
+
+.game-toast-content {
+  flex-grow: 1;
+}
+
+.game-toast-title {
+  color: #ff00ff;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.game-toast-msg {
+  color: #ffffff;
+  font-size: 13px;
+}
+
+@keyframes toastGlow {
+  from { filter: drop-shadow(0 0 2px #00ffff); }
+  to { filter: drop-shadow(0 0 8px #00ffff); }
+}
+
+.game-toast.success-theme {
+  border-color: #63ff2f;
+  box-shadow: 0 0 15px rgba(99, 255, 47, 0.6);
+}
+
+.game-toast.success-theme .game-toast-icon,
+.game-toast.success-theme .game-toast-title {
+  color: #63ff2f;
+}
+
+.game-toast.error-theme {
+  border-color: #ff3b3b;
+  box-shadow: 0 0 15px rgba(255, 59, 59, 0.6);
+}
+
+.game-toast.error-theme .game-toast-icon,
+.game-toast.error-theme .game-toast-title {
+  color: #ff3b3b;
+}
+
+.center-logo-img {
+  width: 150px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 15px #00ffff);
+}
+
+/* ==================== 📱 CLEAN RESPONSIVE MEDIA QUERIES ==================== */
+@media (max-width: 768px) {
+  header {
+    height: 70px;
+    padding: 0 12px;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  header img {
+    width: 80px;
+    margin-top: 0 !important;
+  }
+
+  header .nav-links {
+    gap: 12px;
+    justify-content: center;
+  }
+
+  header a {
+    font-size: 11px;
+    letter-spacing: 0px;
+  }
+
+  /* 📱 Responsive Badge & Avatar Fix */
+  .user-badge {
+    transform: scale(0.85);
+    transform-origin: right center;
+    padding: 3px 10px 3px 3px;
+    width: auto !important;
+  }
+
+  header .user-badge .user-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    margin-right: 6px !important;
+  }
+
+  .user-name {
+    font-size: 11px;
+  }
+
+  .user-profession {
+    font-size: 10px;
+  }
+
+  /* 📱 Mobile Profile Modal Avatar Fix */
+  #profileModal img,
+  #profileView img,
+  #viewImg,
+  #preview {
+    width: 100px !important;
+    height: 100px !important;
+    margin: 10px auto !important;
+    object-fit: contain !important;
+    object-position: center !important;
+  }
+
+  .login-btn {
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+
+  .content {
+    padding-top: 90px;
+  }
+
+  .welcome {
+    font-size: 7vw;
+  }
+
+  .title {
+    font-size: 8vw;
+    margin-bottom: 20px;
+  }
+
+  /* Orbit System Adjustments */
+  .orbit-container {
+    min-height: 520px;
+    padding: 40px 0;
+  }
+
+  .orbit-ring {
+    width: 260px;
+    height: 260px;
+  }
+
+  .center-hub {
+    position: absolute;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 10;
+  }
+
+  .center-hub h2 {
+    font-size: 0.85rem;
+  }
+
+  .center-logo-img {
+    width: 100px;
+  }
+
+  .game-item {
+    width: 85px;
+    height: 48px;
+    margin-left: -42px;
+    margin-top: -24px;
+  }
+
+  .game-box {
+    font-size: 0.68rem;
+    padding: 4px;
+    line-height: 1.1;
+  }
+
+  .start-btn:hover {
+    box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
+    background: hsl(179, 100%, 55%);
+    transform: translateY(-3px);
+  }
+
+  .game-item:nth-child(1) { transform: rotate(0deg) translate(160px) rotate(0deg); }
+  .game-item:nth-child(2) { transform: rotate(72deg) translate(160px) rotate(-72deg); }
+  .game-item:nth-child(3) { transform: rotate(144deg) translate(160px) rotate(-144deg); }
+  .game-item:nth-child(4) { transform: rotate(216deg) translate(160px) rotate(-216deg); }
+  .game-item:nth-child(5) { transform: rotate(288deg) translate(160px) rotate(-288deg); }
+
+  /* Game Cards Adjustments */
+  .game-card {
+    width: 250px !important;
+    flex: 0 0 250px !important;
+  }
+}
