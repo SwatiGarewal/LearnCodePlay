@@ -1,537 +1,669 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mouse Adventure</title>
-<link rel="stylesheet" href="{% static 'home/bootstrap/css/bootstrap.min.css' %}">
-<link rel="stylesheet" href="{% static 'home/fontawesome/css/all.css' %}">
-<!-- --------------------css------------------------------ -->
-<style>
-body{
-   margin: 0;
-      font-family: Arial;
-background: url("{% static 'home/image/background2.png' %}") no-repeat center/cover;      height: 100vh;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mouse Maze Pro</title>
+
+  <!-- Google Fonts Matched with Homepage -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap">
+  <link rel="stylesheet" href="{% static 'home/bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'home/fontawesome/css/all.css' %}">
+
+  <!-- ------------------ CSS STYLING ------------------ -->
+  <style>
+    *,
+    *:before,
+    *:after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Share Tech Mono", monospace;
+      background: url("{% static 'home/image/background2.png' %}") no-repeat center/cover fixed;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
       width: 100%;
+      padding: 30px 0;
     }
 
-.main{
-  display:grid;
-  grid-template-columns:1fr 1.5fr 1fr;
-  gap:20px;
-  width:90%;
-  max-width:1200px;
-}
+    .main {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr 1fr;
+      gap: 25px;
+      width: 92%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-.card{
-  background:rgba(255,255,255,0.1);
-  backdrop-filter:blur(10px);
-  padding:20px;
-  border-radius:20px;
-  text-align:justify;
-}
+    .card {
+      background: rgba(12, 16, 28, 0.82);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      padding: 22px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      transition: border-color 0.3s ease;
+    }
 
-canvas{
-  border-radius:10px;
-  background:#fff;
-}
+    .card:hover {
+      border-color: rgba(0, 255, 255, 0.5);
+    }
 
-pre{
-  background:#111;
-  padding:10px;
-  border-radius:10px;
-  height:220px;
-  overflow:auto;
-  text-align:left;
-}
+    /* 🎯 Neon Glowing Headings */
+    .card-heading {
+      font-family: "Orbitron", sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #00ffff;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
 
-.tab{
-  padding:6px;
-  margin:3px;
-  background:#555;
-  border:none;
-  color:white;
-  cursor:pointer;
-  border-radius:8px;
-}
+    .game-title {
+      font-size: 28px;
+      color: #f1fd47;
+      text-shadow: 0 0 12px rgba(241, 253, 71, 0.6);
+    }
 
-.tab.active{
-  background:cyan;
-  color:black;
-}
+    .stat-badge {
+      font-size: 16px;
+      color: #e2e8f0;
+      margin-bottom: 6px;
+    }
 
-.btn{
-  padding:8px 15px;
-  background:cyan;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  margin-top:10px;
-}
-  .btn:hover{
-  background-color:cyan;
-  color: #111;
-}
-#code{
-  height: 380px;
-}
-.back-btn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
+    .stat-badge span {
+      color: #00ffff;
+      font-family: "Orbitron", sans-serif;
+      font-weight: bold;
+    }
 
-  border: none;
-  border-radius: 20px;
-  height: 60px;
-  width: 100px;
-  background: linear-gradient(45deg, #151e52, #00eeff);
-  color: rgb(252, 251, 251);
-  font-weight: bold;
-  font-size: 20px;
-  cursor: pointer;
-  transition: 0.3s;
-}
+    /* Canvas styling */
+    canvas {
+      border-radius: 12px;
+      background: #090d16;
+      border: 2px solid rgba(0, 255, 255, 0.3);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+      margin: 10px auto;
+      display: block;
+    }
 
-/* Hover Effect */
-.back-btn:hover {
-  background: #00ffff;
-  color: black;
+    .btn-action {
+      padding: 10px 22px;
+      background: #00ffff;
+      color: #000;
+      font-family: "Orbitron", sans-serif;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+      letter-spacing: 1px;
+    }
 
-  box-shadow: 0 0 10px #00ffff,
-              0 0 20px #00ffff;
+    .btn-action:hover {
+      background-color: #00c3ff;
+      color: #000;
+      box-shadow: 0 0 15px #00ffff;
+      transform: translateY(-2px);
+    }
 
-  transform: scale(1.1);
-}
-</style>
+    #code {
+      height: 280px;
+      font-family: "Share Tech Mono", monospace;
+      font-size: 13px;
+    }
+
+    pre {
+      background: #070b14;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      padding: 14px;
+      border-radius: 10px;
+      overflow: auto;
+      text-align: left;
+      color: #38bdf8;
+    }
+
+    .tab {
+      padding: 6px 14px;
+      margin: 2px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      cursor: pointer;
+      background: #1e293b;
+      color: white;
+      font-family: "Orbitron", sans-serif;
+      font-size: 12px;
+      transition: 0.3s ease;
+    }
+
+    .tab.active {
+      background: #00ffff;
+      color: black;
+      font-weight: bold;
+      box-shadow: 0 0 10px #00ffff;
+    }
+
+    /* 🎯 Game Info Redesign Styling */
+    .info-badge {
+      display: inline-block;
+      background: rgba(0, 255, 255, 0.15);
+      color: #00ffff;
+      border: 1px solid #00ffff;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      margin-right: 4px;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 10px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .info-list li {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      color: #cbd5e1;
+    }
+
+    .info-list li i {
+      color: #f1fd47;
+      margin-top: 3px;
+    }
+
+    /* 🎮 VIRTUAL D-PAD CONTROLS FOR MOBILE */
+    .d-pad {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin: 15px 0;
+    }
+
+    .d-pad-row {
+      display: flex;
+      gap: 15px;
+    }
+
+    .d-btn {
+      width: 48px;
+      height: 48px;
+      background: rgba(17, 25, 40, 0.9);
+      border: 1px solid #00ffff;
+      color: #00ffff;
+      border-radius: 12px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+      touch-action: manipulation;
+    }
+
+    .d-btn:active {
+      background: #00ffff;
+      color: #000;
+      box-shadow: 0 0 15px #00ffff;
+      transform: scale(0.95);
+    }
+
+    /* Back Button */
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      border: none;
+      border-radius: 20px;
+      height: 50px;
+      width: 100px;
+      background: linear-gradient(45deg, #151e52, #00eeff);
+      color: #ffffff;
+      font-family: "Orbitron", sans-serif;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      z-index: 999;
+    }
+
+    .back-btn:hover {
+      background: #00ffff;
+      color: black;
+      box-shadow: 0 0 15px #00ffff;
+      transform: scale(1.08);
+    }
+
+    /* 🏆 CYBERPUNK WIN MODAL STYLING */
+    .win-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+
+    .win-modal-content {
+      background: rgba(12, 18, 30, 0.95);
+      border: 2px solid #00ffff;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.5), inset 0 0 15px rgba(0, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 30px 25px;
+      text-align: center;
+      max-width: 380px;
+      width: 90%;
+      animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes modalPop {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .win-icon {
+      font-size: 45px;
+      color: #f1fd47;
+      text-shadow: 0 0 15px #f1fd47;
+      margin-bottom: 10px;
+    }
+
+    .win-title {
+      font-family: "Orbitron", sans-serif;
+      font-size: 24px;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+      margin-bottom: 8px;
+    }
+
+    .win-msg {
+      font-size: 13px;
+      color: #a0aec0;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    .win-stats {
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px dashed #00ffff;
+      padding: 10px;
+      border-radius: 10px;
+      font-family: "Orbitron", sans-serif;
+      color: #ffffff;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+
+    .win-stats span {
+      color: #f1fd47;
+      font-weight: bold;
+    }
+
+    .win-btn {
+      background: #00ffff;
+      color: #000000;
+      font-family: "Orbitron", sans-serif;
+      font-weight: bold;
+      padding: 10px 30px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      box-shadow: 0 0 10px #00ffff;
+    }
+
+    .win-btn:hover {
+      background: #f1fd47;
+      box-shadow: 0 0 20px #f1fd47;
+      transform: scale(1.05);
+    }
+
+    /* ==================== 📱 MOBILE RESPONSIVE LAYOUT ==================== */
+    @media (max-width: 900px) {
+      body {
+        padding-top: 80px;
+      }
+
+      .main {
+        grid-template-columns: 1fr;
+        width: 90%;
+        gap: 20px;
+      }
+
+      .card-heading {
+        font-size: 20px;
+      }
+
+      .d-pad {
+        display: flex;
+      }
+
+      .back-btn {
+        top: 12px;
+        right: 12px;
+        height: 40px;
+        width: 80px;
+        font-size: 13px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<!-- -----------------dashboard------------------------ -->
-<div class="main">
-
-<!-- GAME -->
-<div class="card">
-<h2>Mouse Maze Game</h2>
-<p>Moves: <span id="moves">0</span></p>
-<p>Best: <span id="best">-</span></p>
 
-<canvas id="game" width="275" height="275"></canvas>
-
-<div id="msg"></div>
-<button class="btn" onclick="start()">Restart</button>
-</div>
-
-<!-- CODE -->
-<div class="card">
-<h2>Code Viewer</h2>
-
-<span><button class="tab active" onclick="setLang('python',this)">Python</button>
-<button class="tab" onclick="setLang('java',this)">Java</button>
-<button class="tab" onclick="setLang('cpp',this)">C++</button>
-<button class="tab" onclick="setLang('c',this)">C</button></span>
-<br>
-<pre id="code"></pre>
-</div>
-
-<!-- INFO -->
-<div class="card">
-<h2>Game Info</h2>
-<p>Reach cheese in minimum moves 🧀</p>
-    <h6>Help the mouse find his treat and learn movement logic!</h6>
-    <h6>🐭 Guide a curious little mouse through a maze of twists and turns to reach his favorite treat cheesecake! This fun and educational puzzle game helps players develop logical thinking and directional skills as they navigate challenges and learn movement patterns. Perfect for all ages, it’s a delightful blend of brain-teasing fun and adorable adventure.</h6>
-
-</div>
-  <!-- back button -->
-  <a href="{% url 'game' %}"><button class="back-btn">Back</button></a>
-
-</div>
-<!-- -------------------javascript-------------------------- -->
-<script>
-
-let canvas=document.getElementById("game");
-let ctx=canvas.getContext("2d");
-let gameOver = false;
-
-let size=25;
-let grid=11;
-
-let player, cheese, maze;
-
-let moves=0;
-let best = parseInt(localStorage.getItem("mouseBest"));
-
-if(best === null){
-  document.getElementById("best").innerText="-";
-}else{
-  document.getElementById("best").innerText=best;
-}
-
-let lang="python";
-let action="start";
-
-/* ✅ PROFESSIONAL CODE */
-const codes = {
-
-start:{
-python:`# Generate Maze
-import random
-
-WIDTH, HEIGHT = 10, 10
-
-maze = [[0]*WIDTH for _ in range(HEIGHT)]
-
-# simple walls
-for i in range(WIDTH):
-    maze[0][i] = maze[HEIGHT-1][i] = 1
-for i in range(HEIGHT):
-    maze[i][0] = maze[i][WIDTH-1] = 1
-
-player = [1,1]
-
-def random_position():
-    while True:
-        x = random.randint(1, WIDTH-2)
-        y = random.randint(1, HEIGHT-2)
-        if maze[y][x] == 0:
-            return [x,y]
-
-cheese = random_position()`,
-
-java:`// Generate Maze
-int WIDTH = 10, HEIGHT = 10;
-
-int[][] maze = new int[HEIGHT][WIDTH];
-
-// walls
-for(int i=0;i<WIDTH;i++){
-    maze[0][i] = maze[HEIGHT-1][i] = 1;
-}
-for(int i=0;i<HEIGHT;i++){
-    maze[i][0] = maze[i][WIDTH-1] = 1;
-}
-
-int x = 1, y = 1;
-
-Random rand = new Random();
-int cheeseX, cheeseY;
-
-do{
-    cheeseX = rand.nextInt(WIDTH-2)+1;
-    cheeseY = rand.nextInt(HEIGHT-2)+1;
-}while(maze[cheeseY][cheeseX] == 1);`,
-
-cpp:`// Generate Maze
-#include <vector>
-#include <cstdlib>
-using namespace std;
-
-int WIDTH = 10, HEIGHT = 10;
-
-vector<vector<int>>maze(HEIGHT,vector<int>(WIDTH,0));
-
-// walls
-for(int i=0;i<WIDTH;i++){
-    maze[0][i] = maze[HEIGHT-1][i] = 1;
-}
-for(int i=0;i<HEIGHT;i++){
-    maze[i][0] = maze[i][WIDTH-1] = 1;
-}
-
-int x = 1, y = 1;
-
-int cheeseX, cheeseY;
-do{
-    cheeseX = rand()%(WIDTH-2)+1;
-    cheeseY = rand()%(HEIGHT-2)+1;
-}while(maze[cheeseY][cheeseX] == 1);`,
-
-c:`// Generate Maze
-#include <stdio.h>
-#include <stdlib.h>
-
-int WIDTH = 10, HEIGHT = 10;
-
-int maze[10][10] = {0};
-
-// walls
-for(int i=0;i<WIDTH;i++){
-    maze[0][i] = maze[HEIGHT-1][i] = 1;
-}
-for(int i=0;i<HEIGHT;i++){
-    maze[i][0] = maze[i][WIDTH-1] = 1;
-}
-
-int x = 1, y = 1;
-
-int cheeseX, cheeseY;
-do{
-    cheeseX = rand()%(WIDTH-2)+1;
-    cheeseY = rand()%(HEIGHT-2)+1;
-}while(maze[cheeseY][cheeseX] == 1);`
-},
-
-up:{
-python:`# Move Up
-if y > 0 and maze[y-1][x] != 1:
-    y -= 1
-else:
-    print("Blocked!")`,
-
-java:`if(y > 0 && maze[y-1][x] != 1){
-    y--;
-}else{
-    System.out.println("Blocked!");
-}`,
-
-cpp:`if(y > 0 && maze[y-1][x] != 1){
-    y--;
-}else{
-    cout << "Blocked!";
-}`,
-
-c:`if(y > 0 && maze[y-1][x] != 1){
-    y--;
-}else{
-    printf("Blocked!");
-}`
-},
-
-down:{
-python:`# Move Down
-if y < HEIGHT-1 and maze[y+1][x] != 1:
-    y += 1
-else:
-    print("Blocked!")`,
-
-java:`if(y < HEIGHT-1 && maze[y+1][x] != 1){
-    y++;
-}else{
-    System.out.println("Blocked!");
-}`,
-
-cpp:`if(y < HEIGHT-1 && maze[y+1][x] != 1){
-    y++;
-}else{
-    cout << "Blocked!";
-}`,
-
-c:`if(y < HEIGHT-1 && maze[y+1][x] != 1){
-    y++;
-}else{
-    printf("Blocked!");
-}`
-},
-
-left:{
-python:`# Move Left
-if x > 0 and maze[y][x-1] != 1:
-    x -= 1
-else:
-    print("Blocked!")`,
-
-java:`if(x > 0 && maze[y][x-1] != 1){
-    x--;
-}else{
-    System.out.println("Blocked!");
-}`,
-
-cpp:`if(x > 0 && maze[y][x-1] != 1){
-    x--;
-}else{
-    cout << "Blocked!";
-}`,
-
-c:`if(x > 0 && maze[y][x-1] != 1){
-    x--;
-}else{
-    printf("Blocked!");
-}`
-},
-
-right:{
-python:`# Move Right
-if x < WIDTH-1 and maze[y][x+1] != 1:
-    x += 1
-else:
-    print("Blocked!")`,
-
-java:`if(x < WIDTH-1 && maze[y][x+1] != 1){
-    x++;
-}else{
-    System.out.println("Blocked!");
-}`,
-
-cpp:`if(x < WIDTH-1 && maze[y][x+1] != 1){
-    x++;
-}else{
-    cout << "Blocked!";
-}`,
-
-c:`if(x < WIDTH-1 && maze[y][x+1] != 1){
-    x++;
-}else{
-    printf("Blocked!");
-}`
-},
-
-win:{
-python:`# Win Condition
-if [x,y] == cheese:
-    print("You Win!")`,
-
-java:`if(x == cheeseX && y == cheeseY){
-    System.out.println("You Win!");
-}`,
-
-cpp:`if(x == cheeseX && y == cheeseY){
-    cout << "You Win!";
-}`,
-
-c:`if(x == cheeseX && y == cheeseY){
-    printf("You Win!");
-}`
-}
-
-};
-/* LANGUAGE */
-function setLang(l,btn){
-lang=l;
-document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
-btn.classList.add("active");
-code.innerText=codes[action][lang];
-}
-
-/* CODE UPDATE */
-function showCode(a){
-action=a;
-code.innerText=codes[a][lang];
-}
-
-/* MAZE */
-function generateMaze(){
-let m=Array.from({length:grid},()=>Array(grid).fill(1));
-
-function carve(x,y){
-m[y][x]=0;
-let dirs=[[1,0],[-1,0],[0,1],[0,-1]];
-dirs.sort(()=>Math.random()-0.5);
-
-for(let [dx,dy] of dirs){
-let nx=x+dx*2;
-let ny=y+dy*2;
-
-if(nx>0 && ny>0 && nx<grid-1 && ny<grid-1 && m[ny][nx]==1){
-m[y+dy][x+dx]=0;
-carve(nx,ny);
-}
-}
-}
-
-carve(1,1);
-return m;
-}
-
-/* RANDOM CHEESE */
-function placeCheese(){
-let empty=[];
-for(let y=0;y<grid;y++){
-for(let x=0;x<grid;x++){
-if(maze[y][x]==0 && !(x==1 && y==1)){
-empty.push({x,y});
-}
-}
-}
-return empty[Math.floor(Math.random()*empty.length)];
-}
-
-/* DRAW */
-function draw(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-
-for(let y=0;y<grid;y++){
-for(let x=0;x<grid;x++){
-ctx.fillStyle=maze[y][x]==1?"#333":"#eee";
-ctx.fillRect(x*size,y*size,size,size);
-}
-}
-
-ctx.font="20px Arial";
-ctx.fillText("🧀",cheese.x*size+5,cheese.y*size+20);
-ctx.fillText("🐭",player.x*size+5,player.y*size+20);
-}
-
-/* START */
-function start(){
-gameOver = false;
-moves=0;
-document.getElementById("moves").innerText=0;
-
-maze=generateMaze();
-player={x:1,y:1};
-cheese=placeCheese();
-
-document.getElementById("msg").innerText="";
-showCode("start");
-draw();
-}
-
-/* MOVE */
-function move(dx,dy,a){
-if(gameOver) return;
-let nx=player.x+dx;
-let ny=player.y+dy;
-
-if(nx<0||ny<0||nx>=grid||ny>=grid) return;
-
-if(maze[ny][nx] != 1){
-    moves++;
-    document.getElementById("moves").innerText = moves;
-
-    player.x = nx;
-    player.y = ny;
-    showCode(a);
-}else{
-    showCode("wall");
-}
-
-draw();
-check();
-}
-
-/* WIN */
-function check(){
-if(player.x==cheese.x && player.y==cheese.y){
-showCode("win");
-gameOver = true;
-document.getElementById("msg").innerText=`🎉 You Win in ${moves} moves!`;
-
-if(!best || moves<best){
-best=moves;
-localStorage.setItem("mouseBest",best);
-document.getElementById("best").innerText=best;
-}
-}
-}
-
-/* CONTROLS */
-let lastMove = 0;
-
-window.addEventListener("keydown",(e)=>{
-    let now = Date.now();
-    lastMove = now;
-if(e.key=="ArrowUp") move(0,-1,"up");
-if(e.key=="ArrowDown") move(0,1,"down");
-if(e.key=="ArrowLeft") move(-1,0,"left");
-if(e.key=="ArrowRight") move(1,0,"right");
-});
-
-start();
-
-</script>
-
+  <!-- --------------- DASHBOARD MAIN CONTAINER ------------------- -->
+  <div class="main">
+
+    <!-- 1. GAME DASHBOARD CARD -->
+    <div class="card text-center">
+      <h2 class="card-heading game-title">Mouse Maze</h2>
+      <div class="d-flex justify-content-around my-2">
+        <p class="stat-badge">Moves: <span id="moves">0</span></p>
+        <p class="stat-badge">Best: <span id="best">-</span></p>
+      </div>
+
+      <canvas id="game" width="275" height="275"></canvas>
+
+      <!-- 🎮 MOBILE TOUCH D-PAD CONTROLS -->
+      <div class="d-pad">
+        <div class="d-btn" onclick="handleTouchMaze('ArrowUp')"><i class="fas fa-chevron-up"></i></div>
+        <div class="d-pad-row">
+          <div class="d-btn" onclick="handleTouchMaze('ArrowLeft')"><i class="fas fa-chevron-left"></i></div>
+          <div class="d-btn" onclick="handleTouchMaze('ArrowDown')"><i class="fas fa-chevron-down"></i></div>
+          <div class="d-btn" onclick="handleTouchMaze('ArrowRight')"><i class="fas fa-chevron-right"></i></div>
+        </div>
+      </div>
+
+      <button class="btn-action w-100" onclick="start()">RESTART MAZE</button>
+    </div>
+
+    <!-- 2. CODE VIEWER CARD -->
+    <div class="card">
+      <h2 class="card-heading">Code Viewer</h2>
+      <div class="d-flex flex-wrap mb-2">
+        <button class="tab active" onclick="setLang('python',this)">Python</button>
+        <button class="tab" onclick="setLang('java',this)">Java</button>
+        <button class="tab" onclick="setLang('cpp',this)">C++</button>
+        <button class="tab" onclick="setLang('c',this)">C</button>
+      </div>
+      <pre id="code">Use Keyboard Arrow Keys or Touch Controls to navigate...</pre>
+    </div>
+
+    <!-- 3. UPGRADED GAME INFO CARD -->
+    <div class="card">
+      <h2 class="card-heading">Game Info</h2>
+      <div>
+        <span class="info-badge">2D MATRIX</span>
+        <span class="info-badge">PATHFINDING</span>
+        <span class="info-badge">DFS MAZE LOGIC</span>
+      </div>
+
+      <ul class="info-list">
+        <li>
+          <i class="fas fa-route"></i>
+          <span><strong>Maze Navigation:</strong> Guide the mouse 🐭 through procedurally generated matrix paths to reach the cheese 🧀.</span>
+        </li>
+        <li>
+          <i class="fas fa-laptop-code"></i>
+          <span><strong>Algorithm Mapping:</strong> Experience boundary conditions, wall collision detection, and coordinate transformations in real-time code.</span>
+        </li>
+        <li>
+          <i class="fas fa-gamepad"></i>
+          <span><strong>Keyboard & Touch Controls:</strong> Use your Arrow Keys or Touch Buttons to navigate through matrix corridors.</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- BACK BUTTON -->
+    <a href="{% url 'game' %}"><button class="back-btn">Back</button></a>
+
+  </div>
+
+  <!-- 🏆 CUSTOM CYBERPUNK VICTORY MODAL -->
+  <div id="winModal" class="win-modal">
+    <div class="win-modal-content">
+      <div class="win-icon"><i class="fas fa-trophy"></i></div>
+      <h2 class="win-title">MAZE SOLVED!</h2>
+      <p class="win-msg">Cheese Secured! Pathfinding Array Executed Successfully.</p>
+      <div class="win-stats">
+        TOTAL MOVES: <span id="modalMoves">0</span>
+      </div>
+      <button class="win-btn" onclick="closeWinModal()">CONTINUE</button>
+    </div>
+  </div>
+
+  <!-- ----------------------- JAVASCRIPT LOGIC ------------------ -->
+  <script>
+    let canvas = document.getElementById("game");
+    let ctx = canvas.getContext("2d");
+    let gameOver = false;
+
+    let size = 25;
+    let grid = 11;
+
+    let player, cheese, maze;
+
+    let moves = 0;
+    let best = parseInt(localStorage.getItem("mouseBest"));
+
+    if (isNaN(best) || best === null) {
+      document.getElementById("best").innerText = "-";
+    } else {
+      document.getElementById("best").innerText = best;
+    }
+
+    let lang = "python";
+    let action = "start";
+
+    /* CODE SNIPPETS */
+    const codes = {
+      start: {
+        python: `# Generate Maze\nimport random\n\nWIDTH, HEIGHT = 10, 10\nmaze = [[0]*WIDTH for _ in range(HEIGHT)]\n\n# simple walls\nfor i in range(WIDTH):\n    maze[0][i] = maze[HEIGHT-1][i] = 1\nfor i in range(HEIGHT):\n    maze[i][0] = maze[i][WIDTH-1] = 1\n\nplayer = [1,1]\ncheese = [8,8]`,
+        java: `// Generate Maze\nint WIDTH = 10, HEIGHT = 10;\nint[][] maze = new int[HEIGHT][WIDTH];\n\n// Walls initialization\nfor(int i=0;i<WIDTH;i++){\n    maze[0][i] = maze[HEIGHT-1][i] = 1;\n}\nint x = 1, y = 1;`,
+        cpp: `// Generate Maze\n#include <vector>\nusing namespace std;\n\nint WIDTH = 10, HEIGHT = 10;\nvector<vector<int>> maze(HEIGHT, vector<int>(WIDTH,0));\n\nint x = 1, y = 1;`,
+        c: `// Generate Maze\n#include <stdio.h>\n\nint WIDTH = 10, HEIGHT = 10;\nint maze[10][10] = {0};\n\nint x = 1, y = 1;`
+      },
+      up: {
+        python: `# Move Up\nif y > 0 and maze[y-1][x] != 1:\n    y -= 1\nelse:\n    print("Blocked!")`,
+        java: `if(y > 0 && maze[y-1][x] != 1){\n    y--;\n}else{\n    System.out.println("Blocked!");\n}`,
+        cpp: `if(y > 0 && maze[y-1][x] != 1){\n    y--;\n}else{\n    cout << "Blocked!";\n}`,
+        c: `if(y > 0 && maze[y-1][x] != 1){\n    y--;\n}else{\n    printf("Blocked!");\n}`
+      },
+      down: {
+        python: `# Move Down\nif y < HEIGHT-1 and maze[y+1][x] != 1:\n    y += 1\nelse:\n    print("Blocked!")`,
+        java: `if(y < HEIGHT-1 && maze[y+1][x] != 1){\n    y++;\n}else{\n    System.out.println("Blocked!");\n}`,
+        cpp: `if(y < HEIGHT-1 and maze[y+1][x] != 1){\n    y++;\n}else{\n    cout << "Blocked!";\n}`,
+        c: `if(y < HEIGHT-1 && maze[y+1][x] != 1){\n    y++;\n}else{\n    printf("Blocked!");\n}`
+      },
+      left: {
+        python: `# Move Left\nif x > 0 and maze[y][x-1] != 1:\n    x -= 1\nelse:\n    print("Blocked!")`,
+        java: `if(x > 0 && maze[y][x-1] != 1){\n    x--;\n}else{\n    System.out.println("Blocked!");\n}`,
+        cpp: `if(x > 0 && maze[y][x-1] != 1){\n    x--;\n}else{\n    cout << "Blocked!";\n}`,
+        c: `if(x > 0 && maze[y][x-1] != 1){\n    x--;\n}else{\n    printf("Blocked!");\n}`
+      },
+      right: {
+        python: `# Move Right\nif x < WIDTH-1 and maze[y][x+1] != 1:\n    x += 1\nelse:\n    print("Blocked!")`,
+        java: `if(x < WIDTH-1 && maze[y][x+1] != 1){\n    x++;\n}else{\n    System.out.println("Blocked!");\n}`,
+        cpp: `if(x < WIDTH-1 && maze[y][x+1] != 1){\n    x++;\n}else{\n    cout << "Blocked!";\n}`,
+        c: `if(x < WIDTH-1 && maze[y][x+1] != 1){\n    x++;\n}else{\n    printf("Blocked!");\n}`
+      },
+      win: {
+        python: `# Win Condition\nif [x,y] == cheese:\n    print("You Win! Path Completed 🎉")`,
+        java: `if(x == cheeseX && y == cheeseY){\n    System.out.println("You Win!");\n}`,
+        cpp: `if(x == cheeseX && y == cheeseY){\n    cout << "You Win!";\n}`,
+        c: `if(x == cheeseX && y == cheeseY){\n    printf("You Win!");\n}`
+      }
+    };
+
+    function showWinModal(moves) {
+      document.getElementById("modalMoves").innerText = moves;
+      document.getElementById("winModal").style.display = "flex";
+    }
+
+    function closeWinModal() {
+      document.getElementById("winModal").style.display = "none";
+      start();
+    }
+
+    function setLang(l, btn) {
+      lang = l;
+      document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      code.innerText = codes[action][lang];
+    }
+
+    function showCode(a) {
+      action = a;
+      if (codes[a]) {
+        code.innerText = codes[a][lang];
+      }
+    }
+
+    function generateMaze() {
+      let m = Array.from({ length: grid }, () => Array(grid).fill(1));
+
+      function carve(x, y) {
+        m[y][x] = 0;
+        let dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+        dirs.sort(() => Math.random() - 0.5);
+
+        for (let [dx, dy] of dirs) {
+          let nx = x + dx * 2;
+          let ny = y + dy * 2;
+
+          if (nx > 0 && ny > 0 && nx < grid - 1 && ny < grid - 1 && m[ny][nx] == 1) {
+            m[y + dy][x + dx] = 0;
+            carve(nx, ny);
+          }
+        }
+      }
+
+      carve(1, 1);
+      return m;
+    }
+
+    function placeCheese() {
+      let empty = [];
+      for (let y = 0; y < grid; y++) {
+        for (let x = 0; x < grid; x++) {
+          if (maze[y][x] == 0 && !(x == 1 && y == 1)) {
+            empty.push({ x, y });
+          }
+        }
+      }
+      return empty[Math.floor(Math.random() * empty.length)];
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let y = 0; y < grid; y++) {
+        for (let x = 0; x < grid; x++) {
+          ctx.fillStyle = maze[y][x] == 1 ? "#1e293b" : "#0f172a";
+          ctx.fillRect(x * size, y * size, size, size);
+          
+          if (maze[y][x] == 1) {
+            ctx.strokeStyle = "rgba(0, 255, 255, 0.15)";
+            ctx.strokeRect(x * size, y * size, size, size);
+          }
+        }
+      }
+
+      ctx.font = "18px Arial";
+      ctx.fillText("🧀", cheese.x * size + 3, cheese.y * size + 20);
+      ctx.fillText("🐭", player.x * size + 3, player.y * size + 20);
+    }
+
+    function start() {
+      gameOver = false;
+      moves = 0;
+      document.getElementById("moves").innerText = 0;
+
+      maze = generateMaze();
+      player = { x: 1, y: 1 };
+      cheese = placeCheese();
+
+      showCode("start");
+      draw();
+    }
+
+    function move(dx, dy, a) {
+      if (gameOver) return;
+      let nx = player.x + dx;
+      let ny = player.y + dy;
+
+      if (nx < 0 || ny < 0 || nx >= grid || ny >= grid) return;
+
+      if (maze[ny][nx] != 1) {
+        moves++;
+        document.getElementById("moves").innerText = moves;
+
+        player.x = nx;
+        player.y = ny;
+        showCode(a);
+      }
+
+      draw();
+      check();
+    }
+
+    function check() {
+      if (player.x == cheese.x && player.y == cheese.y) {
+        showCode("win");
+        gameOver = true;
+
+        setTimeout(() => {
+          showWinModal(moves);
+        }, 300);
+
+        if (!best || moves < best) {
+          best = moves;
+          localStorage.setItem("mouseBest", best);
+          document.getElementById("best").innerText = best;
+        }
+      }
+    }
+
+    function handleTouchMaze(key) {
+      if (key === "ArrowUp") move(0, -1, "up");
+      if (key === "ArrowDown") move(0, 1, "down");
+      if (key === "ArrowLeft") move(-1, 0, "left");
+      if (key === "ArrowRight") move(1, 0, "right");
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        e.preventDefault();
+      }
+      handleTouchMaze(e.key);
+    });
+
+    start();
+  </script>
 </body>
+
 </html>

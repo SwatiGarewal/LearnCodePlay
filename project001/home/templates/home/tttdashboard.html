@@ -1,754 +1,660 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tic Tac Toe Smart AI</title>
-<link rel="stylesheet" href="{% static 'home/bootstrap/css/bootstrap.min.css' %}">
-<link rel="stylesheet" href="{% static 'home/fontawesome/css/all.css' %}">
-<!-- ---------------css------------------------- -->
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:url("{% static 'home/image/background2.png' %}");
-  height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:white;
-  width: 100%;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe Smart AI Pro</title>
 
-.main{
-  display:grid;
-  grid-template-columns:1fr 1.5fr 1fr;
-  gap:20px;
-  width:90%;
-  max-width:1100px;
-}
+  <!-- Google Fonts Matched with Homepage -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap">
+  <link rel="stylesheet" href="{% static 'home/bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'home/fontawesome/css/all.css' %}">
 
-.card{
-  background:rgba(255,255,255,0.1);
-  backdrop-filter:blur(10px);
-  padding:20px;
-  border-radius:20px;
-  text-align:justify;
-  
-}
+  <!-- ------------------ CSS STYLING ------------------ -->
+  <style>
+    *,
+    *:before,
+    *:after {
+      box-sizing: border-box;
+    }
 
-.board{
-  display:grid;
-  grid-template-columns:repeat(3,80px);
-  gap:10px;
-  justify-content:center;
-}
+    body {
+      margin: 0;
+      font-family: "Share Tech Mono", monospace;
+      background: url("{% static 'home/image/background2.png' %}") no-repeat center/cover fixed;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      width: 100%;
+      padding: 30px 0;
+    }
 
-.cell{
-  width:80px;
-  height:80px;
-  background:#fff;
-  color:black;
-  font-size:40px;
-  /* display:flex; */
-  align-items:center;
-  justify-content:center;
-  border-radius:10px;
-  cursor:pointer;
-  display:inline-flex;
-  font-size:30px;
-  border:1px solid #ccc;
+    .main {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr 1fr;
+      gap: 25px;
+      width: 92%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-}
+    .card {
+      background: rgba(12, 16, 28, 0.82);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      padding: 22px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      transition: border-color 0.3s ease;
+    }
 
+    .card:hover {
+      border-color: rgba(0, 255, 255, 0.5);
+    }
 
+    /* 🎯 Neon Glowing Headings */
+    .card-heading {
+      font-family: "Orbitron", sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #00ffff;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
 
-pre{
-  background:#111;
-  padding:10px;
-  border-radius:10px;
-  height:220px;
-  overflow:auto;
-  text-align:left;
-}
+    .game-title {
+      font-size: 28px;
+      color: #f1fd47;
+      text-shadow: 0 0 12px rgba(241, 253, 71, 0.6);
+    }
 
-.tab{
-  padding:6px;
-  margin:3px;
-  background:#555;
-  border:none;
-  color:white;
-  cursor:pointer;
-  border-radius:8px;
-}
+    .stat-badge {
+      font-size: 16px;
+      color: #e2e8f0;
+      margin-bottom: 12px;
+    }
 
-.tab.active{
-  background:cyan;
-  color:black;
-}
+    .stat-badge span {
+      color: #00ffff;
+      font-family: "Orbitron", sans-serif;
+      font-weight: bold;
+    }
 
-.btn{
-  padding:8px 15px;
-  background:cyan;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-}
-#code{
-  height: 355px;
-  margin-right: -15px;
-}
-.btn:hover{
-  background-color:cyan;
-  color: #111;
-}
-.back-btn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
+    /* Board & Cells */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 75px);
+      gap: 10px;
+      justify-content: center;
+      margin-top: 15px;
+    }
 
-  border: none;
-  border-radius: 20px;
-  height: 60px;
-  width: 100px;
-  background: linear-gradient(45deg, #151e52, #00eeff);
-  color: rgb(252, 251, 251);
-  font-weight: bold;
-  font-size: 20px;
-  cursor: pointer;
-  transition: 0.3s;
-}
+    .cell {
+      width: 75px;
+      height: 75px;
+      background: #090d16;
+      color: #00ffff;
+      font-family: "Orbitron", sans-serif;
+      font-weight: bold;
+      font-size: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      cursor: pointer;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
 
-/* Hover Effect */
-.back-btn:hover {
-  background: #00ffff;
-  color: black;
+    .cell:hover {
+      border-color: #00ffff;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+      background: #111827;
+    }
 
-  box-shadow: 0 0 10px #00ffff,
-              0 0 20px #00ffff;
+    .btn-action {
+      padding: 10px 22px;
+      background: #00ffff;
+      color: #000;
+      font-family: "Orbitron", sans-serif;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: all 0.3s ease;
+      letter-spacing: 1px;
+    }
 
-  transform: scale(1.1);
-}
-</style>
+    .btn-action:hover {
+      background-color: #00c3ff;
+      color: #000;
+      box-shadow: 0 0 15px #00ffff;
+      transform: translateY(-2px);
+    }
+
+    #code {
+      height: 280px;
+      font-family: "Share Tech Mono", monospace;
+      font-size: 13px;
+    }
+
+    pre {
+      background: #070b14;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      padding: 14px;
+      border-radius: 10px;
+      overflow: auto;
+      text-align: left;
+      color: #38bdf8;
+    }
+
+    .tab {
+      padding: 6px 14px;
+      margin: 2px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      cursor: pointer;
+      background: #1e293b;
+      color: white;
+      font-family: "Orbitron", sans-serif;
+      font-size: 12px;
+      transition: 0.3s ease;
+    }
+
+    .tab.active {
+      background: #00ffff;
+      color: black;
+      font-weight: bold;
+      box-shadow: 0 0 10px #00ffff;
+    }
+
+    /* 🎯 Game Info Redesign Styling */
+    .info-badge {
+      display: inline-block;
+      background: rgba(0, 255, 255, 0.15);
+      color: #00ffff;
+      border: 1px solid #00ffff;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      margin-right: 4px;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 10px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .info-list li {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      color: #cbd5e1;
+    }
+
+    .info-list li i {
+      color: #f1fd47;
+      margin-top: 3px;
+    }
+
+    /* Back Button */
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      border: none;
+      border-radius: 20px;
+      height: 50px;
+      width: 100px;
+      background: linear-gradient(45deg, #151e52, #00eeff);
+      color: #ffffff;
+      font-family: "Orbitron", sans-serif;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      z-index: 999;
+    }
+
+    .back-btn:hover {
+      background: #00ffff;
+      color: black;
+      box-shadow: 0 0 15px #00ffff;
+      transform: scale(1.08);
+    }
+
+    /* 🏆 CYBERPUNK RESULT MODAL STYLING */
+    .win-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+
+    .win-modal-content {
+      background: rgba(12, 18, 30, 0.95);
+      border: 2px solid #00ffff;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.5), inset 0 0 15px rgba(0, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 30px 25px;
+      text-align: center;
+      max-width: 380px;
+      width: 90%;
+      animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes modalPop {
+      0% { transform: scale(0.7); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .win-icon {
+      font-size: 45px;
+      color: #f1fd47;
+      text-shadow: 0 0 15px #f1fd47;
+      margin-bottom: 10px;
+    }
+
+    .win-title {
+      font-family: "Orbitron", sans-serif;
+      font-size: 24px;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+      margin-bottom: 8px;
+    }
+
+    .win-msg {
+      font-size: 13px;
+      color: #a0aec0;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .win-btn {
+      background: #00ffff;
+      color: #000000;
+      font-family: "Orbitron", sans-serif;
+      font-weight: bold;
+      padding: 10px 30px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      box-shadow: 0 0 10px #00ffff;
+    }
+
+    .win-btn:hover {
+      background: #f1fd47;
+      box-shadow: 0 0 20px #f1fd47;
+      transform: scale(1.05);
+    }
+
+    /* ==================== 📱 MOBILE RESPONSIVE LAYOUT ==================== */
+    @media (max-width: 900px) {
+      body {
+        padding-top: 80px;
+      }
+
+      .main {
+        grid-template-columns: 1fr;
+        width: 90%;
+        gap: 20px;
+      }
+
+      .card-heading {
+        font-size: 20px;
+      }
+
+      .board {
+        grid-template-columns: repeat(3, 65px);
+        gap: 8px;
+      }
+
+      .cell {
+        width: 65px;
+        height: 65px;
+        font-size: 26px;
+      }
+
+      .back-btn {
+        top: 12px;
+        right: 12px;
+        height: 40px;
+        width: 80px;
+        font-size: 13px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<!-- -------------------dashboard--------------- -->
-<div class="main">
 
-<!-- GAME -->
-<div class="card">
-<h2>Tic Tac Toe 🤖</h2>
-<p id="status">Click Start</p>
+  <!-- --------------- DASHBOARD MAIN CONTAINER ------------------- -->
+  <div class="main">
 
-<div class="board" id="board"></div><br>
-<button class="btn" onclick="start()">Start</button>
+    <!-- 1. GAME DASHBOARD CARD -->
+    <div class="card text-center">
+      <h2 class="card-heading game-title">Tic Tac Toe 🤖</h2>
+      <p class="stat-badge">Status: <span id="status">Click Start</span></p>
 
-</div>
+      <div class="board" id="board"></div>
 
-<!-- CODE -->
-<div class="card">
-<h2>Code Viewer</h2>
+      <button class="btn-action w-100" onclick="start()">RESTART MATCH</button>
+    </div>
 
-<span><button class="tab active" onclick="setLang('python',this)">Python</button>
-<button class="tab" onclick="setLang('java',this)">Java</button>
-<button class="tab" onclick="setLang('cpp',this)">C++</button>
-<button class="tab" onclick="setLang('c',this)">C</button></span>
-<br>
-<pre id="code"></pre>
-</div>
+    <!-- 2. CODE VIEWER CARD -->
+    <div class="card">
+      <h2 class="card-heading">Code Viewer</h2>
+      <div class="d-flex flex-wrap mb-2">
+        <button class="tab active" onclick="setLang('python',this)">Python</button>
+        <button class="tab" onclick="setLang('java',this)">Java</button>
+        <button class="tab" onclick="setLang('cpp',this)">C++</button>
+        <button class="tab" onclick="setLang('c',this)">C</button>
+      </div>
+      <pre id="code">Make a move to trace decision logic...</pre>
+    </div>
 
-<!-- INFO -->
-<div class="card">
-<h2>Game Info</h2>
-<p>Beat the Smart AI 🤖</p>
-    <h6>Tic Tac Toe: Think Fast, Play Smart!</h6>
-    <p>Tic Tac Toe (also known as Noughts and Crosses) is a classic two-player strategy game played on a 3×3 grid. Players take turns marking a space in the grid with their symbol X or O. The goal is to be the first to get three of your symbols in a row horizontally, vertically, or diagonally!</p>
+    <!-- 3. UPGRADED GAME INFO CARD -->
+    <div class="card">
+      <h2 class="card-heading">Game Info</h2>
+      <div>
+        <span class="info-badge">MINIMAX ALGORITHM</span>
+        <span class="info-badge">STATE TREES</span>
+        <span class="info-badge">HEURISTICS</span>
+      </div>
 
-</div>
-  <!-- back button -->
-  <a href="{% url 'game' %}"><button class="back-btn">Back</button></a>
+      <ul class="info-list">
+        <li>
+          <i class="fas fa-robot"></i>
+          <span><strong>Smart AI Defense:</strong> Challenge an AI agent programmed to evaluate win conditions and block optimal routes.</span>
+        </li>
+        <li>
+          <i class="fas fa-network-wired"></i>
+          <span><strong>Heuristic Evaluation:</strong> Analyze real-time game tree decisions and win-check conditions across languages.</span>
+        </li>
+        <li>
+          <i class="fas fa-bullseye"></i>
+          <span><strong>Tactical Grid:</strong> Claim 3 consecutive cells horizontally, vertically, or diagonally to defeat the algorithm.</span>
+        </li>
+      </ul>
+    </div>
 
-</div>
-<!-- --------------------javascript--------------- -->
-<script>
+    <!-- BACK BUTTON -->
+    <a href="{% url 'game' %}"><button class="back-btn">Back</button></a>
 
-let boardState, gameActive;
-let lang="python";
-let action="start";
+  </div>
 
-/* 🔥 PROPER CODE VIEWER */
-const codes = {
+  <!-- 🏆 CUSTOM CYBERPUNK RESULT MODAL -->
+  <div id="winModal" class="win-modal">
+    <div class="win-modal-content">
+      <div class="win-icon" id="modalIcon"><i class="fas fa-trophy"></i></div>
+      <h2 class="win-title" id="modalTitle">MATCH FINISHED!</h2>
+      <p class="win-msg" id="modalMsg">Decision Tree Execution Complete.</p>
+      <button class="win-btn" onclick="closeWinModal()">CONTINUE</button>
+    </div>
+  </div>
 
-start: {
-python: `# Initialize Game
-board = [""] * 9
-player = "X"
-game_active = True`,
+  <!-- ----------------------- JAVASCRIPT LOGIC ------------------ -->
+  <script>
+    let boardState, gameActive;
+    let lang = "python";
+    let action = "start";
 
-java: `// Initialize Game
-String[] board = new String[9];
-String player = "X";
-boolean gameActive = true;`,
-
-cpp: `// Initialize Game
-vector<string> board(9, "");
-string player = "X";
-bool gameActive = true;`,
-
-c: `// Initialize Game
-char board[9] = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
-char player = 'X';
-int gameActive = 1;`
-},
-
-move: {
-python: `# Player Move
-if board[i] == "":
-    board[i] = player`,
-
-java: `// Player Move
-if(board[i] == null){
-    board[i] = player;
-}`,
-
-cpp: `// Player Move
-if(board[i] == ""){
-    board[i] = player;
-}`,
-
-c: `// Player Move
-if(board[i] == ' '){
-    board[i] = player;
-}`
-},
-
-computer: {
-
-python: `# Smart AI Move
-
-def computer_move(board):
-
-    # Winning combinations
-    win = [(0,1,2),(3,4,5),(6,7,8),
-           (0,3,6),(1,4,7),(2,5,8),
-           (0,4,8),(2,4,6)]
-
-    # Check win
-    def check(player):
-        for a,b,c in win:
-            if board[a]==board[b]==board[c]==player:
-                return True
-        return False
-
-    # 1. Try to WIN
-    for i in range(9):
-        if board[i]=="":
-            board[i]="O"
-            if check("O"):
-                return
-            board[i]=""
-
-    # 2. Block PLAYER
-    for i in range(9):
-        if board[i]=="":
-            board[i]="X"
-            if check("X"):
-                board[i]="O"
-                return
-            board[i]=""
-
-    # 3. Take center
-    if board[4]=="":
-        board[4]="O"
-        return
-
-    # 4. Take corners
-    for i in [0,2,6,8]:
-        if board[i]=="":
-            board[i]="O"
-            return
-
-    # 5. Take any
-    for i in range(9):
-        if board[i]=="":
-            board[i]="O"
-            return`,
-
-java: `// Smart AI Move
-
-void computerMove(String[] board){
-
-    int[][] win = {
-     {0,1,2},{3,4,5},{6,7,8},
-     {0,3,6},{1,4,7},{2,5,8},
-     {0,4,8},{2,4,6}
+    /* CODE SNIPPETS */
+    const codes = {
+      start: {
+        python: `# Initialize Game\nboard = [""] * 9\nplayer = "X"\ngame_active = True`,
+        java: `// Initialize Game\nString[] board = new String[9];\nString player = "X";\nboolean gameActive = true;`,
+        cpp: `// Initialize Game\nvector<string> board(9, "");\nstring player = "X";\nbool gameActive = true;`,
+        c: `// Initialize Game\nchar board[9] = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};\nchar player = 'X';\nint gameActive = 1;`
+      },
+      move: {
+        python: `# Player Move\nif board[i] == "":\n    board[i] = player`,
+        java: `// Player Move\nif(board[i] == null){\n    board[i] = player;\n}`,
+        cpp: `// Player Move\nif(board[i] == ""){\n    board[i] = player;\n}`,
+        c: `// Player Move\nif(board[i] == ' '){\n    board[i] = player;\n}`
+      },
+      computer: {
+        python: `# Smart AI Move\ndef computer_move(board):\n    # 1. Check Win\n    # 2. Block Player\n    # 3. Take Center / Corners\n    pass`,
+        java: `// Smart AI Move\nvoid computerMove(String[] board){\n    // Minimax Heuristics logic\n}`,
+        cpp: `// Smart AI Move\nvoid computerMove(vector<string>& board){\n    // Grid evaluation logic\n}`,
+        c: `// Smart AI Move\nvoid computerMove(char board[]){\n    // Array-based block & win logic\n}`
+      },
+      check: {
+        python: `# Check Winner\nwin = [(0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6)]\ndef check_win(player):\n    return any(all(board[i]==player for i in combo) for combo in win)`,
+        java: `// Check Winner\nboolean checkWin(String player){\n    // Matrix line evaluation\n}`,
+        cpp: `// Check Winner\nbool checkWin(string player){\n    // Matrix line evaluation\n}`,
+        c: `// Check Winner\nint checkWin(char player){\n    // Line evaluation logic\n}`
+      },
+      win: {
+        python: `print("You Win! 🎉")`,
+        java: `System.out.println("You Win!");`,
+        cpp: `cout << "You Win!";`,
+        c: `printf("You Win!");`
+      },
+      draw: {
+        python: `print("Match Draw 🤝")`,
+        java: `System.out.println("Match Draw");`,
+        cpp: `cout << "Match Draw";`,
+        c: `printf("Match Draw");`
+      },
+      loose: {
+        python: `print("Computer Wins! 🤖")`,
+        java: `System.out.println("Computer Wins!");`,
+        cpp: `cout << "Computer Wins!";`,
+        c: `printf("Computer Wins!");`
+      }
     };
 
-    // check win
-    // use inline check instead
-        for(int[] c : win){
-            if(board[c[0]] != null &&
-               board[c[0]].equals(p) &&
-               board[c[1]].equals(p) &&
-               board[c[2]].equals(p)){
-                return true;
-            }
-        }
-        return false;
-    
-
-    // 1. Try WIN
-    for(int i=0;i<9;i++){
-        if(board[i]==null){
-            board[i]="O";
-            if(check("O")) return;
-            board[i]=null;
-        }
+    function highlightLine(text) {
+      return text.split("\n")
+        .map(line => `<div class="line">${line}</div>`)
+        .join("");
     }
 
-    // 2. Block player
-    for(int i=0;i<9;i++){
-        if(board[i]==null){
-            board[i]="X";
-            if(check("X")){
-                board[i]="O";
-                return;
-            }
-            board[i]=null;
-        }
+    function trace(step) {
+      action = step;
+      if (codes[step]) {
+        code.innerHTML = highlightLine(codes[step][lang]);
+      }
     }
 
-    // 3. Center
-    if(board[4]==null){
-        board[4]="O";
-        return;
+    function setLang(l, btn) {
+      lang = l;
+      document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      trace(action);
     }
 
-    // 4. Corners
-    int[] corners = {0,2,6,8};
-    for(int i : corners){
-        if(board[i]==null){
-            board[i]="O";
-            return;
-        }
+    function showWinModal(title, msg, iconClass, iconColor) {
+      document.getElementById("modalTitle").innerText = title;
+      document.getElementById("modalMsg").innerText = msg;
+      const iconContainer = document.getElementById("modalIcon");
+      iconContainer.innerHTML = `<i class="${iconClass}"></i>`;
+      iconContainer.style.color = iconColor;
+      iconContainer.style.textShadow = `0 0 15px ${iconColor}`;
+      document.getElementById("winModal").style.display = "flex";
     }
 
-    // 5. Any
-    for(int i=0;i<9;i++){
-        if(board[i]==null){
-            board[i]="O";
-            return;
-        }
-    }
-}`,
-
-cpp: `// Smart AI Move
-
-void computerMove(vector<string>& board){
-
-    vector<vector<int>> win = {
-     {0,1,2},{3,4,5},{6,7,8},
-     {0,3,6},{1,4,7},{2,5,8},
-     {0,4,8},{2,4,6}
-    };
-
-    auto check = [&](string p){
-        for(auto c : win){
-            if(board[c[0]]==p &&
-               board[c[1]]==p &&
-               board[c[2]]==p){
-                return true;
-            }
-        }
-        return false;
-    };
-
-    // 1. Try WIN
-    for(int i=0;i<9;i++){
-        if(board[i]==""){
-            board[i]="O";
-            if(check("O")) return;
-            board[i]="";
-        }
+    function closeWinModal() {
+      document.getElementById("winModal").style.display = "none";
+      start();
     }
 
-    // 2. Block player
-    for(int i=0;i<9;i++){
-        if(board[i]==""){
-            board[i]="X";
-            if(check("X")){
-                board[i]="O";
-                return;
-            }
-            board[i]="";
-        }
-    }
+    function start() {
+      boardState = Array(9).fill("");
+      gameActive = true;
 
-    // 3. Center
-    if(board[4]==""){
-        board[4]="O";
-        return;
-    }
+      document.getElementById("status").innerText = "Your Turn (X)";
+      trace("start");
 
-    // 4. Corners
-    int corners[4] = {0,2,6,8};
-    for(int i=0;i<4;i++){
-        if(board[corners[i]]==""){
-            board[corners[i]]="O";
-            return;
-        }
-    }
+      let board = document.getElementById("board");
+      board.innerHTML = "";
 
-    // 5. Any
-    for(int i=0;i<9;i++){
-        if(board[i]==""){
-            board[i]="O";
-            return;
-        }
-    }
-}`,
-
-c: `// Smart AI Move
-
-void computerMove(char board[]){
-
-    int win[8][3] = {
-     {0,1,2},{3,4,5},{6,7,8},
-     {0,3,6},{1,4,7},{2,5,8},
-     {0,4,8},{2,4,6}
-    };
-
-    int check(char p){
-        for(int i=0;i<8;i++){
-            if(board[win[i][0]]==p &&
-               board[win[i][1]]==p &&
-               board[win[i][2]]==p){
-                return 1;
-            }
-        }
-        return 0;
-    }
-
-    // 1. Try WIN
-    for(int i=0;i<9;i++){
-        if(board[i]==' '){
-            board[i]='O';
-            if(check('O')) return;
-            board[i]=' ';
-        }
-    }
-
-    // 2. Block player
-    for(int i=0;i<9;i++){
-        if(board[i]==' '){
-            board[i]='X';
-            if(check('X')){
-                board[i]='O';
-                return;
-            }
-            board[i]=' ';
-        }
-    }
-
-    // 3. Center
-    if(board[4]==' '){
-        board[4]='O';
-        return;
-    }
-
-    // 4. Corners
-    int corners[4] = {0,2,6,8};
-    for(int i=0;i<4;i++){
-        if(board[corners[i]]==' '){
-            board[corners[i]]='O';
-            return;
-        }
-    }
-
-    // 5. Any
-    for(int i=0;i<9;i++){
-        if(board[i]==' '){
-            board[i]='O';
-            return;
-        }
-    }
-}`
-},
-check: {
-python: `# Check Winner
-win = [(0,1,2),(3,4,5),(6,7,8),
-       (0,3,6),(1,4,7),(2,5,8),
-       (0,4,8),(2,4,6)]
-
-def check_win(board, player):
-    for a,b,c in win:
-        if board[a] == board[b] == board[c] == player:
-            return True
-    return False`,
-
-java: `// Check Winner
-int[][] win = {
- {0,1,2},{3,4,5},{6,7,8},
- {0,3,6},{1,4,7},{2,5,8},
- {0,4,8},{2,4,6}
-};
-
-boolean checkWin(String[] board, String player){
-    for(int[] c : win){
-        if(board[c[0]] != null &&
-           board[c[0]].equals(player) &&
-           board[c[1]].equals(player) &&
-           board[c[2]].equals(player)){
-            return true;
-        }
-    }
-    return false;
-}`,
-
-cpp: `// Check Winner
-vector<vector<int>> win = {
- {0,1,2},{3,4,5},{6,7,8},
- {0,3,6},{1,4,7},{2,5,8},
- {0,4,8},{2,4,6}
-};
-
-bool checkWin(vector<string>& board, string player){
-    for(auto c : win){
-        if(board[c[0]] == player &&
-           board[c[1]] == player &&
-           board[c[2]] == player){
-            return true;
-        }
-    }
-    return false;
-}`,
-
-c: `// Check Winner
-int win[8][3] = {
- {0,1,2},{3,4,5},{6,7,8},
- {0,3,6},{1,4,7},{2,5,8},
- {0,4,8},{2,4,6}
-};
-
-int checkWin(char board[], char player){
-    for(int i=0;i<8;i++){
-        if(board[win[i][0]]==player &&
-           board[win[i][1]]==player &&
-           board[win[i][2]]==player){
-            return 1;
-        }
-    }
-    return 0;
-}`
-},
-
-win: {
-python: `print("You Win!")`,
-java: `System.out.println("You Win!");`,
-cpp: `cout << "You Win!";`,
-c: `printf("You Win!");`
-},
-
-draw: {
-python: `print("Match Draw")`,
-java: `System.out.println("Match Draw");`,
-cpp: `cout << "Match Draw";`,
-c: `printf("Match Draw");`
-},
-loose: {
-python: `print("computer Win!")`,
-java: `System.out.println("computer Win!");`,
-cpp: `cout << "computer Win!";`,
-c: `printf("computer Win!");`
-},
-
-};
-
-/* 🔥 HIGHLIGHT */
-function highlightLine(text){
-    return text.split("\n")
-    .map(line => `<div class="line">${line}</div>`)
-    .join("");
-}
-
-/* 🔥 TRACE SYSTEM */
-function trace(step){
-    action = step;
-    code.innerHTML = highlightLine(codes[step][lang]);
-}
-
-/* LANGUAGE SWITCH */
-function setLang(l, btn){
-    lang = l;
-    document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    trace(action);
-}
-
-/* START GAME */
-function start(){
-    boardState = Array(9).fill("");
-    gameActive = true;
-
-    document.getElementById("status").innerText = "Your Turn (X)";
-    trace("start");
-
-    let board = document.getElementById("board");
-    board.innerHTML = "";
-
-    for(let i=0;i<9;i++){
+      for (let i = 0; i < 9; i++) {
         let cell = document.createElement("div");
         cell.className = "cell";
         cell.onclick = () => clickCell(i, cell);
         board.appendChild(cell);
+      }
     }
-}
 
-/* PLAYER MOVE */
-function clickCell(i, cell){
-    if(boardState[i] !== "" || !gameActive) return;
+    function clickCell(i, cell) {
+      if (boardState[i] !== "" || !gameActive) return;
 
-    boardState[i] = "X";
-    cell.innerText = "X";
+      boardState[i] = "X";
+      cell.innerText = "X";
+      cell.style.color = "#00ffff";
 
-    trace("move");
+      trace("move");
 
-    if(checkWinner("X")){
-        document.getElementById("status").innerText = "🎉 You Win!";
-        trace("win");
-        gameActive = false;
+      if (checkWinner("X")) {
+        endGame("PLAYER WINS!", "You defeated the AI decision algorithm! 🎉", "fas fa-trophy", "#f1fd47");
         return;
-    }
+      }
 
-    if(!boardState.includes("")){
-        document.getElementById("status").innerText = "Draw";
-        trace("draw");
-        gameActive = false;
+      if (!boardState.includes("")) {
+        endGame("MATCH DRAW", "Grid saturated! Neither system prevailed. 🤝", "fas fa-handshake", "#00ffff");
         return;
+      }
+
+      document.getElementById("status").innerText = "AI Thinking...";
+      setTimeout(() => {
+        if (gameActive) computerMove();
+      }, 400);
     }
 
-    document.getElementById("status").innerText = "Computer Thinking...";
-    setTimeout(() => {
-        if(gameActive) computerMove();
-    }, 500);
-}
+    function computerMove() {
+      let empty = boardState
+        .map((v, i) => v === "" ? i : null)
+        .filter(v => v !== null);
 
-/* 🤖 COMPUTER MOVE */
-function computerMove(){
-
-    let empty = boardState
-    .map((v,i)=> v==="" ? i : null)
-    .filter(v=>v!==null);
-
-    /* 1. WIN */
-    for(let i of empty){
+      /* 1. WIN */
+      for (let i of empty) {
         boardState[i] = "O";
-        if(checkWinner("O")){
-            updateCell(i,"O");
-            trace("computer");
-            endGame("Computer Wins 🤖");
-            return;
+        if (checkWinner("O")) {
+          updateCell(i, "O");
+          endGame("COMPUTER WINS!", "AI algorithm mapped a winning line! 🤖", "fas fa-robot", "#ff3b3b");
+          return;
         }
         boardState[i] = "";
-    }
+      }
 
-    /* 2. BLOCK */
-    for(let i of empty){
+      /* 2. BLOCK */
+      for (let i of empty) {
         boardState[i] = "X";
-        if(checkWinner("X")){
-            boardState[i] = "O";
-            updateCell(i,"O");
-            trace("computer");
-            document.getElementById("status").innerText = "Your Turn (X)";
-            return;
+        if (checkWinner("X")) {
+          boardState[i] = "O";
+          updateCell(i, "O");
+          trace("computer");
+          document.getElementById("status").innerText = "Your Turn (X)";
+          return;
         }
         boardState[i] = "";
-    }
+      }
 
-    /* 3. CENTER */
-    if(boardState[4] === ""){
-        updateCell(4,"O");
+      /* 3. CENTER */
+      if (boardState[4] === "") {
+        updateCell(4, "O");
         trace("computer");
         return nextTurn();
-    }
+      }
 
-    /* 4. CORNERS */
-    let corners = [0,2,6,8];
-    for(let i of corners){
-        if(boardState[i] === ""){
-            updateCell(i,"O");
-            trace("computer");
-            return nextTurn();
+      /* 4. CORNERS */
+      let corners = [0, 2, 6, 8];
+      for (let i of corners) {
+        if (boardState[i] === "") {
+          updateCell(i, "O");
+          trace("computer");
+          return nextTurn();
         }
+      }
+
+      /* 5. RANDOM */
+      let move = empty[Math.floor(Math.random() * empty.length)];
+      updateCell(move, "O");
+      trace("computer");
+
+      nextTurn();
     }
 
-    /* 5. RANDOM */
-    let move = empty[Math.floor(Math.random()*empty.length)];
-    updateCell(move,"O");
-    trace("computer");
+    function updateCell(i, val) {
+      boardState[i] = val;
+      let cell = document.querySelectorAll(".cell")[i];
+      cell.innerText = val;
+      cell.style.color = "#f1fd47";
+    }
 
-    nextTurn();
-}
-
-/* UPDATE CELL */
-function updateCell(i,val){
-    boardState[i] = val;
-    document.querySelectorAll(".cell")[i].innerText = val;
-}
-
-/* NEXT TURN CHECK */
-function nextTurn(){
-
-    if(checkWinner("O")){
-        endGame("Computer Wins 🤖");
+    function nextTurn() {
+      if (checkWinner("O")) {
+        endGame("COMPUTER WINS!", "AI algorithm mapped a winning line! 🤖", "fas fa-robot", "#ff3b3b");
         return;
-    }
+      }
 
-    if(!boardState.includes("")){
-        endGame("Draw");
+      if (!boardState.includes("")) {
+        endGame("MATCH DRAW", "Grid saturated! Neither system prevailed. 🤝", "fas fa-handshake", "#00ffff");
         return;
+      }
+
+      document.getElementById("status").innerText = "Your Turn (X)";
     }
 
-    document.getElementById("status").innerText = "Your Turn (X)";
-}
+    function endGame(title, msg, icon, color) {
+      document.getElementById("status").innerText = title;
 
-/* END GAME */
-function endGame(text){
-    document.getElementById("status").innerText = text;
-
-    if(text.includes("Computer")){
-        trace("loose");   // 👈 NEW
-    }
-    else if(text.includes("Win")){
-        trace("win");           // player win
-    }
-    else{
+      if (title.includes("COMPUTER")) {
+        trace("loose");
+      } else if (title.includes("PLAYER")) {
+        trace("win");
+      } else {
         trace("draw");
+      }
+
+      gameActive = false;
+
+      setTimeout(() => {
+        showWinModal(title, msg, icon, color);
+      }, 300);
     }
 
-    gameActive = false;
-}
+    function checkWinner(player) {
+      trace("check");
 
-/* CHECK WIN */
-function checkWinner(player){
+      const win = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
+      ];
 
-    trace("check");
-
-    const win = [
-    [0,1,2],[3,4,5],[6,7,8],
-    [0,3,6],[1,4,7],[2,5,8],
-    [0,4,8],[2,4,6]
-    ];
-
-    return win.some(c =>
+      return win.some(c =>
         c.every(i => boardState[i] === player)
-    );
-}
+      );
+    }
 
-/* START */
-start();
-</script>
-
+    start();
+  </script>
 </body>
+
 </html>

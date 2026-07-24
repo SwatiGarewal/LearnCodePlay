@@ -1,362 +1,683 @@
-/* -------------------Background------------------------------------ */
-body {
-    margin: 0;
-    padding-top: 90px;
-    overflow-x: hidden;
-    font-family: "Chela One", system-ui;
-    overflow: hidden;
-    width: 100%;
+/* ==================== 🎮 GOOGLE FONTS IMPORTS ==================== */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+
+/* ----------- Body & Global Reset -------------------------------------- */
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
 }
-#overlay {  
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  font-family: "Share Tech Mono", monospace;
+  background: #000;
+  color: #fff;
+}
+
+/*----------- Background Area --------------------------------- */
+.background {
+  width: 100%;
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  animation: bgChange 15s infinite linear;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes bgChange {
+  0% { background-image: url("/static/home/image/background1.png"); }
+  30% { background-image: url("/static/home/image/background2.png"); }
+  66% { background-image: url("/static/home/image/background2.png"); }
+  100% { background-image: url("/static/home/image/background1.png"); }
+}
+
+/* ------------------- Header Layout ------------------------------------------------------- */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  padding: 0 25px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+header .nav-links {
+  display: flex;
+  gap: 60px;
+  align-items: center;
+}
+
+header .logo img {
+  width: 150px;
+  height: auto;
+  margin-top: 20px;
+  transition: transform 0.4s ease;
+  animation: float 3s ease-in-out infinite;
+}
+
+header .logo img:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 10px #00ffff) drop-shadow(0 0 20px #00ffff);
+}
+
+header a {
+  color: white !important;
+  text-decoration: none;
+  margin: 0;
+  font-family: "Orbitron", sans-serif;
+  font-size: 20px;
+  letter-spacing: 1px;
+  transition: 0.3s ease;
+}
+
+header a:hover {
+  background: #00ffff !important;
+  color: black !important;
+  box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff;
+  border-radius: 20px;
+  padding: 5px 15px;
+}
+
+.login-btn {
+  padding: 8px 25px;
+  background: rgb(242, 223, 10);
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-family: "Orbitron", sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: black;
+  transition: 0.3s ease;
+}
+
+.login-btn:hover {
+  background: #00ffff;
+  box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff;
+}
+
+/* ------------------------ 🎯 Profile Badge & Top-Right Avatar ---------------------------- */
+.user-badge {
+  display: flex;
+  align-items: center;
+  background: #1b0221;
+  padding: 6px 15px 6px 6px;
+  border-radius: 50px;
+  cursor: pointer;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+}
+
+.user-badge:hover {
+  box-shadow: 0 0 25px #00ffff;
+}
+
+header .user-badge .user-avatar {
+  width: 45px !important;
+  height: 45px !important;
+  min-width: 45px !important;
+  min-height: 45px !important;
+  border-radius: 50% !important;
+  border: 2px solid #00ffff !important;
+  overflow: hidden !important;
+  margin-right: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #0b111e !important;
+}
+
+header .user-badge .user-avatar img#navProfileImg {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important; /* 🌟 Zero Crop / Full Face Contain */
+  object-position: center !important;
+  background-color: #0b111e !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 50% !important;
+  box-shadow: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.user-name {
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: "Orbitron", sans-serif;
+  text-align: center;
+}
+
+.user-profession {
+  color: #00ffff;
+  font-size: 12px;
+  text-transform: capitalize;
+  text-align: center;
+}
+
+/*------------------ Modals Background Layer -----------------------------------------*/
+#overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.6);
   z-index: 10;
   display: none;
 }
-/* -------------------Header---------------------------------------- */
-header {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 90px !important;
-    z-index: 1000 !important;
-    background: rgba(0, 0, 0, 0.95) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    backdrop-filter: blur(5px);
-}
-header a, .login-btn {
-    text-decoration: none !important;
-    font-family: "Chela One", system-ui !important;
-    transition: 0.3s;
-}
-header a {
-    color: white !important;
-    margin: 0 40px !important;
-    font-size: 28px !important;
-}
-header a:hover {
-    background: #00ffff !important;
-    color: black !important;
-    box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff;
-    border-radius: 20px;
-    padding: 5px 15px;
-}
-.login-btn {
-    padding: 8px 25px !important;
-    background: #f1df0a !important;
-    color: black !important;
-    border: none !important;
-    border-radius: 25px !important;
-    cursor: pointer !important;
-    font-size: 20px !important;
-    font-weight: bold !important;
-    margin-left: 20px !important;
-}
-.login-btn:hover {
-    background: #00ffff !important;
-    box-shadow: 0 0 20px #00ffff !important;
-}
-/* ------------------Contact Modal--------------------------------------------- */
-#contactModal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.8);
-  width: 350px;
-  padding: 25px;
-  border-radius: 25px; 
-  backdrop-filter: blur(15px);
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  box-shadow: 0 0 30px rgba(0,255,255,0.4);
-  text-align: center;
-  color: white;
-  display: none;
-  z-index: 20;
-  transition: 0.3s ease;
-}
-#contactModal.show {
-  transform: translate(-50%, -50%) scale(1);
-}
-#contactModal h2 {
-  font-size: 24px;
-  margin-bottom: 15px;
-  text-shadow: 0 0 10px #00ffff;
-}
-#contactModal p {
-  font-size: 16px;
-  margin: 10px 0;
-  letter-spacing: 1px;
-}
-#contactModal button {
-  margin-top: 15px;
-  padding: 8px 20px;
-  border-radius: 20px;
-  border: none;
-  background: #00ffff;
-  color: black;
-  cursor: pointer;
-  transition: 0.3s;
-}
-#contactModal button:hover {
-  background: #00c3ff;
-  box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff;
-}
-/* ---------------------------Profile Modal----------------------------------- */
+
+/* ------------------🎯 MODALS RESTRUCTURED --------------------------------------------- */
+#contactModal,
+#loginModal,
 #profileModal {
-  width: 380px !important;
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(12, 11, 11, 0.779);
-  padding: 20px;
-  border-radius: 15px;
-  z-index: 20;  
-  display: none;
-  max-height: 72vh;
- overflow-y: scroll;
- scrollbar-width: none;
- -ms-overflow-style: none;
- -webkit-scrollbar: none;
-}
-#profileModal.show {
-  transform: translate(-50%, -50%) scale(1);
-}
-#profileModal input,#profileModal select {
-  width: 100%;
-  padding: 10px;
-  margin: 8px 0;
-  border-radius: 12px;
-  border: none;
-  background: rgba(14, 13, 13, 0.909);
-  color: white;
-  outline: none;
-  transition: 0.3s;
-}
-#profileModal input::placeholder {
-  color: rgba(255,255,255,0.7);
-}
-#profileModal input:focus {
-  background: rgba(0,255,255,0.2);
-  box-shadow: 0 0 10px #00ffff;
-}
-#profileModal button {
-  margin-top: 10px;
-  margin-left: 20px;
-  padding: 8px 20px;
-  border-radius: 20px;
-  border: none;
-  background: #00ffff;
-  color: black;
-  cursor: pointer;
-  transition: 0.3s;
-}
-#profileModal button:hover {
-  background: #00c3ff;
-  box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff;
-}
-#profileModal h2 {
-  margin-bottom: 10px;
-  font-size: 30px;
-  text-shadow: 0 0 10px #00ffff;
-  text-align: center;
-  color: white;
-}
-#profileModal img, #profileView img, #viewImg, #preview {
-    width: 140px !important;  
-    height: 140px !important; 
-    min-width: 140px !important;
-    min-height: 140px !important;
-    border-radius: 50% !important; 
-    object-fit: cover !important;  
-    display: block !important;
-    margin: 15px auto !important;
-    border: 4px solid #00ffff !important;
-    box-shadow: 0 0 15px #00ffff !important;
-}
-#profileView p {
-  margin: 8px 0;
-  font-size: 18px;
-  letter-spacing: 1px;
-  color: white !important;
-  text-align: justify;
-  margin-left: 30px;
-}
-#profileView button {
-  margin: 10px 5px;
-}
-/* ------------------------Profile Icon---------------------------- */
-.user-badge {
-    display: flex;
-    align-items: center;
-    background: #1b0221;
-    padding: 5px 20px 5px 5px;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: 0.3s;
-    border: 1px solid rgba(255,255,255,0.1);
-    min-width: 180px;
-    margin-left: 70px;
-}
-.user-badge:hover {
-    box-shadow: 0 0 15px #00ffff;
-    transform: scale(1.05);
-}
-.user-avatar {
-    width: 60px;
-    height: 60px;
-    background: #fff;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 2px solid #00ffff;
-    margin-right: 12px;
-}
-.user-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-.user-info {
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-}
-.user-name {
-    color: white;
-    font-size: 25px;
-    font-weight: bold;
-    line-height: 1.2;
-}
-.user-profession {
-    color: #00ffff;
-    font-size: 15px;
-    text-transform: capitalize;
-    text-align: center;
-}
-/* ------------------------Login/Register Modal---------------------------- */
-#loginModal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.8);
-  width: 350px;
+  transform: translate(-50%, -50%) scale(0.9);
+  width: 90% !important;
+  max-width: 380px !important;
   padding: 25px;
   border-radius: 25px;
   backdrop-filter: blur(15px);
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  box-shadow: 0 0 30px rgba(0,255,255,0.4);
-  text-align: center;
-  color: white;
-  display: none;
   z-index: 20;
-  transition: 0.3s;
+  display: none;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-#loginModal.show {
+
+#contactModal.show,
+#loginModal.show,
+#profileModal.show {
   transform: translate(-50%, -50%) scale(1);
 }
+
+#contactModal,
+#loginModal {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+  text-align: center;
+  color: white;
+}
+
+#profileModal {
+  background: rgba(12, 11, 11, 0.93) !important;
+  max-height: 80vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  border: 2px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+#profileModal::-webkit-scrollbar { display: none; }
+
+#profileModal:hover,
+#profileModal:focus-within {
+  border: 2px solid #00ffff !important;
+  box-shadow: 0 0 25px #00ffff, 0 0 50px rgba(0, 255, 255, 0.5) !important;
+}
+
+#contactModal h2,
+#loginModal h2,
+#profileModal h2 {
+  font-family: "Orbitron", sans-serif;
+  font-size: 26px;
+  margin-bottom: 15px;
+  text-shadow: 0 0 10px #00ffff;
+  color: white;
+}
+
+#contactModal p,
+#profileView p {
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: #00ffff;
+}
+
+#profileModal input,
+#profileModal select,
 #loginModal input {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin: 8px 0;
   border-radius: 12px;
-  border: none;
-  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(14, 13, 13, 0.9);
   color: white;
+  outline: none;
+  font-family: "Share Tech Mono", monospace;
+  transition: 0.3s;
 }
-#loginModal input::placeholder {
-  color: white;
-  opacity: 1;
+
+#profileModal input:focus,
+#loginModal input:focus {
+  background: rgba(0, 255, 255, 0.15);
+  border-color: #00ffff;
+  box-shadow: 0 0 10px #00ffff;
 }
+
+#contactModal button,
+#profileModal button,
 #loginModal button {
-  margin-top: 10px;
-  padding: 8px 20px;
+  margin: 10px 5px;
+  padding: 10px 22px;
   border-radius: 20px;
   border: none;
   background: #00ffff;
+  color: black;
+  font-weight: bold;
+  font-family: "Orbitron", sans-serif;
   cursor: pointer;
+  transition: 0.3s;
 }
+
+#contactModal button:hover,
+#profileModal button:hover,
 #loginModal button:hover {
+  background: #00c3ff;
   box-shadow: 0 0 15px #00ffff;
 }
 
-/* -------------------------Content-------------------------------- */
-.container { position: relative; width: 100%; height: 100%; }
-#background {
-    height: calc(100vh - 90px);
-    background: url("/static/home/image/background2.png") center/cover no-repeat;
-    animation: zoomBg 6s infinite alternate;
-    position: relative;
+/* 🎯 Profile Modal & Preview Image Styling */
+#profileModal img,
+#profileView img,
+#viewImg,
+#preview {
+  width: 130px !important;
+  height: 130px !important;
+  border-radius: 50% !important;
+  object-fit: contain !important; /* 🌟 Full Image Contain without Head Cut */
+  object-position: center !important;
+  background-color: #0b111e !important;
+  display: block !important;
+  margin: 15px auto !important;
+  border: 4px solid #00ffff !important;
+  box-shadow: 0 0 15px #00ffff !important;
 }
-@keyframes zoomBg { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+#profileView p {
+  margin: 8px 0;
+  text-align: left;
+  padding-left: 20px;
+}
+
+/* Password Input Container */
+.password-container {
+  position: relative;
+  width: 100%;
+  margin-bottom: 15px;
+  display: inline-block;
+}
+
+.password-container input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #00ffff;
+  z-index: 10;
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+}
+
+/* Custom Game Notification Toast */
+.game-toast {
+  position: fixed;
+  top: 20px;
+  right: -450px;
+  background: linear-gradient(135deg, #111936, #070b19);
+  border: 2px solid #00ffff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.6), inset 0 0 10px rgba(0, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 99999;
+  font-family: 'Courier New', Courier, monospace;
+  transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  min-width: 325px;
+}
+
+.game-toast.show {
+  right: 20px;
+}
+
+.game-toast-icon {
+  font-size: 24px;
+  color: #00ffff;
+  animation: toastGlow 1.5s ease-in-out infinite alternate;
+}
+
+.game-toast-content {
+  flex-grow: 1;
+}
+
+.game-toast-title {
+  color: #ff00ff;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.game-toast-msg {
+  color: #ffffff;
+  font-size: 13px;
+}
+
+@keyframes toastGlow {
+  from { filter: drop-shadow(0 0 2px #00ffff); }
+  to { filter: drop-shadow(0 0 8px #00ffff); }
+}
+
+.game-toast.success-theme {
+  border-color: #63ff2f;
+  box-shadow: 0 0 15px rgba(99, 255, 47, 0.6);
+}
+
+.game-toast.success-theme .game-toast-icon,
+.game-toast.success-theme .game-toast-title {
+  color: #63ff2f;
+}
+
+.game-toast.error-theme {
+  border-color: #ff3b3b;
+  box-shadow: 0 0 15px rgba(255, 59, 59, 0.6);
+}
+
+.game-toast.error-theme .game-toast-icon,
+.game-toast.error-theme .game-toast-title {
+  color: #ff3b3b;
+}
+
+/* ------------------------- Content Area -------------------------------- */
+.container { 
+  width: 100%; 
+  max-width: 1200px; 
+  margin: 0 auto;
+  padding: 120px 20px 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#background {
+  min-height: calc(100vh - 80px);
+  background: url("/static/home/image/background2.png") center/cover no-repeat;
+  animation: zoomBg 10s infinite alternate;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 100px 20px 40px 20px;
+}
+
+@keyframes zoomBg { from { transform: scale(1); } to { transform: scale(1.03); } }
 @keyframes glow { from { filter: drop-shadow(0 0 5px #ffcc00); } to { filter: drop-shadow(0 0 20px #ff6600); } }
 
+/* ------------------------- 🪐 CENTER LOGO & CLUSTER LAYOUT ---------------------------- */
+.arcade-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  height: 620px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-/* -------------------------Center Logo---------------------------- */
+/* Center Logo */
 .center-logo {
-    position: absolute;
-    top: 30%; left: 50%;
-    transform: translate(-50%, -50%);
+  position: absolute;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  text-align: center;
 }
-.center-logo img { width: 350px; height: 350px; animation: glow 2s infinite alternate; }
-.center-logo:hover { filter: drop-shadow(0 0 10px #00ffff) drop-shadow(0 0 20px #00ffff); }
-/*--------------------------- BOXES (Game Cards)---------------------*/
+
+.center-logo img { 
+  width: 250px;
+  height: auto; 
+  animation: glow 2s infinite alternate; 
+}
+
+/* Base Card Styling */
 .box {
-    position: absolute;
-    padding: 18px;
-    width: 190px;
-    font-size: 20px;
-    border-radius: 15px;
-    text-align: center;
-    font-weight: bold;
-    background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    transition: 0.4s;
-    font-family: 'Franklin Gothic Medium', Arial, sans-serif;
+  position: absolute;
+  width: 220px;
+  padding: 15px;
+  border-radius: 15px;
+  text-align: center;
+  font-weight: bold;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  font-family: "Orbitron", sans-serif;
+  font-size: 15px;
+  z-index: 2;
 }
+
 .box:hover {
-    transform: translateY(-10px) scale(1.08);
-    background: rgba(255, 255, 255, 0.18);
-    box-shadow: 0 0 15px #00ffff, 0 0 30px rgba(0,255,255,0.5);
+  transform: scale(1.08);
+  background: rgba(255, 255, 255, 0.18);
+  border-color: #00ffff;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+  z-index: 10;
 }
+
+.box img {
+  max-width: 85px;
+  height: auto;
+  margin: 10px auto;
+  display: block;
+}
+
+/* 📍 5 Absolute Positions Around Logo */
+.box.top-left {
+  top: 20px;
+  left: 20px;
+}
+
+.box.top-right {
+  top: 20px;
+  right: 20px;
+}
+
+.box.left {
+  top: 310px;
+  left: 20px;
+}
+
+.box.right {
+  top: 310px;
+  right: 20px;
+}
+
+.box.bottom-center {
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.box.bottom-center:hover {
+  transform: translateX(-50%) scale(1.08);
+}
+
+/* Button Styling */
 .play {
-    margin-top: 10px;
-    padding: 8px 18px;
-    border: none;
-    border-radius: 20px;
-    background: linear-gradient(45deg, #ffcc00, #ff6600);
-    color: black;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
+  margin-top: 10px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 20px;
+  background: linear-gradient(45deg, #ffcc00, #ff6600);
+  color: black;
+  font-weight: bold;
+  font-family: "Orbitron", sans-serif;
+  cursor: pointer;
+  transition: 0.3s ease;
 }
-.play:hover { background: #00ffff; box-shadow: 0 0 10px #00ffff; transform: scale(1.1); }
 
-/* --------Boxes Positions------------------------------ */
-.top-left { top: 10%; left: 10%;}
-.top-right { top: 10%; right: 10%; }
-.left { top: 53%; left: 10%; }
-.right { top: 53%; right: 10%; }
-.bottom-center { bottom: 6%; left:42%; }
-/*------------------------Footer------------------------------------ */
+.play:hover { 
+  background: #00ffff; 
+  box-shadow: 0 0 15px #00ffff; 
+}
+
+/*------------------------ Footer ------------------------------------ */
 footer {
-    background: #000000;
-    color: white;
-    text-align: center;
-    padding: 15px;
-    height: 100px;
-    font-size: 20px;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  text-align: center;
+  padding: 25px 10px;
+  z-index: 999;
+  font-size: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ==================== 📱 MOBILE VIEW ADJUSTMENTS ==================== */
+@media (max-width: 900px) {
+  .arcade-wrapper {
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding-top: 20px;
+  }
+
+  .center-logo {
+    position: static;
+    transform: none;
+    margin-bottom: 10px;
+  }
+
+  .center-logo img {
+    width: 180px;
+  }
+
+  .box {
+    position: static !important;
+    transform: none !important;
+    width: 280px;
+  }
+
+  .box.bottom-center:hover {
+    transform: scale(1.05) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    height: 70px;
+    padding: 0 12px;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  header .logo img {
+    width: 80px;
+    margin-top: 0 !important;
+  }
+
+  header .nav-links {
+    gap: 12px;
+    justify-content: center;
+  }
+
+  header a {
+    font-size: 11px !important;
+    letter-spacing: 0px;
+  }
+
+  /* 📱 Responsive Badge & Avatar Fix */
+  .user-badge {
+    transform: scale(0.75);
+    transform-origin: right center;
+    padding: 4px 10px 4px 4px;
+    width: auto !important;
+  }
+
+  header .user-badge .user-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    margin-right: 6px !important;
+  }
+
+  .user-name {
+    font-size: 11px;
+  }
+
+  .user-profession {
+    font-size: 10px;
+  }
+
+  /* 📱 Mobile Profile Modal Avatar Fix */
+  #profileModal img,
+  #profileView img,
+  #viewImg,
+  #preview {
+    width: 100px !important;
+    height: 100px !important;
+    margin: 10px auto !important;
+    object-fit: contain !important;
+    object-position: center !important;
+  }
+
+  .login-btn {
+    font-size: 11px !important;
+    padding: 5px 12px !important;
+  }
+
+  .container {
+    padding-top: 90px;
+  }
+
+  .center-logo img {
+    max-width: 180px;
+  }
+
+  .games-grid {
+    grid-template-columns: 1fr;
+    max-width: 300px;
+  }
+}

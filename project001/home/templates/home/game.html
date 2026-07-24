@@ -1,343 +1,859 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Zone </title>
-    <link rel="stylesheet" href="{% static 'home/css/game.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Chela+One&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'home/bootstrap/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'home/fontawesome/css/all.css' %}">
-</head>
-<body>
-<!-- ----------------------Header---------------------------------- -->
-<header>
-  <a href="/">Home</a>
-  <a href="/game/">Game</a>
-  <a href="#" onclick="openModal()">Contact</a>
-  {% if user.is_authenticated %}
-  <div class="user-badge" onclick="openProfile()">
-    <div class="user-avatar">
-      {% if user.profile.image %}
-      <img src="{{ user.profile.image.url }}" id="navProfileImg">
-      {% else %}
-      <img src="{% static 'home/image/default.png' %}" id="navProfileImg">
-      {% endif %}
-    </div>
-    <div class="user-info">
-      <span class="user-name">{{ user.username }}</span>
-      <span class="user-profession">{{ user.profile.profession|default:"Gamer" }}</span>
-    </div>
-  </div>
-  {% else %}
-  <button class="login-btn" onclick="openLogin()">Login / Register</button>
-  {% endif %} 
-</header>
-<!-----------------------Contact Modal----------------------------->
-<div id="contactModal">
-  <h2>CONTACT US</h2>
-  <p>Email: swatigarewal35@gmail.com</p>
-  <p>Phone: +91 7587296807</p>
-  <p>Linkedln: swati-garewal-57189b263</p>
-  <button style="background-color: aqua; border-radius: 20px;" onclick="closeModal()">Close</button>
-</div>
-<!-- --------------------Profile Modal---------------------- -->
-<div id="profileModal" tabindex="0">
-  <div id="formSection">
-    <h2>PROFILE UPDATE</h2>
-    <input type="file" id="imageInput"><br><br>
-    <img id="preview" width="80">
-    <p style="color: rgb(255, 255, 21); text-align: center;">click & scroll down</p>
-    <input type="text" id="name" name="username" value="{{ user.username }}" placeholder="Name"><br>
-    <input type="email" id="email" name="email" value="{{ user.email }}" placeholder="Email"><br>    
-    <input type="text" id="mobile" placeholder="Mobile"><br>
-    <select id="gender">
-      <option value="">Gender</option>
-      <option>Male</option>
-      <option>Female</option>
-    </select><br>
-    <input type="date" id="dob"><br>
-    <input type="text" id="profession" value="{{ user.profession }}"  placeholder="Profession"><br><br>
-    <button onclick="saveProfileToServer()">Save</button>
-    <button style="background-color: aqua; border-radius: 20px;" onclick="closeProfile()">Close</button>
-    <a href="{% url 'logout' %}"><button style="background-color: aqua; border-radius: 20px;">Logout</button></a>
-  </div>
-<!-------------------- Profile View ------------------------>
-  <div id="profileView" style="display:none;">
-    <h2><center>MY PROFILE</center></h2>
-    <img id="viewImg" width="100"><br>
-    <p id="viewName"></p>
-    <p id="viewEmail"></p>
-    <p id="viewMobile"></p>
-    <p id="viewGender"></p>
-    <p id="viewDob"></p>
-    <p id="viewProfession"></p>
-    <button style="background-color: aqua; border-radius: 20px;" onclick="editProfile()">Edit</button>
-    <button style="background-color: aqua; border-radius: 20px;"  onclick="closeProfile()">Close</button>
-    <a href="{% url 'logout' %}"><button style="background-color: aqua; border-radius: 20px;">Logout</button></a>
-  </div>
-</div>   
-<!-- --------------------Login/Register Modal ------------------------->
-<div id="loginModal">
-  <div id="loginSection">
-    <h2>Login</h2>
-    {% if messages %}
-    {% for message in messages %}
-    <p style="color:#63ff2f;">{{ message }}</p>
-    {% endfor %}
-    {% endif %}
-    <form method="POST" action="{% url 'login' %}">
-      {% csrf_token %}
-      <input type="hidden" name="next" value="{{ request.path }}"> 
-      <input type="text" name="username" placeholder="Username" required>
-      <input type="password" name="password" placeholder="Password" required>      
-      <button type="submit">Login</button>
-    </form>
-    <p>Don't have account? 
-      <span onclick="showRegister()"><u style="color: blue;">Register</u></span>
-    </p>
-  </div>
-  <div id="registerSection" style="display:none;">
-    <h2>Register</h2>
-    <form method="POST" action="{% url 'register' %}">
-      {% csrf_token %}
-      <input type="hidden" name="next" value="{{ request.path }}"> 
-      <input type="text" name="username" placeholder="Username" required>
-      <input type="email" name="email" placeholder="Email" required>
-      <input type="password" name="password" placeholder="Password" required>    
-      <button type="submit" onclick="showLogin()">Register</button>
-    </form>
-    <p>Already have account? 
-      <span onclick="showLogin()"><u style="color: blue;">Login</u></span>
-    </p>
-  </div>
-  <button onclick="closeLogin()">Close</button>
-</div>
-<div id="overlay" onclick="closeModal(); closeProfile(); closeLogin();"></div>
-<!-- -----------Content-------------------------------- -->
-<div id="background">
-    <div class="container">
-        <div class="center-logo">
-            <img src="{% static 'home/image/logo.png' %}" alt="Logo">
-        </div>
-        <div class="box top-left">Memory Match Game<br>
-            <img src="{% static 'home/image/card.gif' %}" height="100" width="100">
-            {% if user.is_authenticated %}
-            <a href="{% url 'matchdashboard' %}"><button class="play">Start Game</button></a>
-            {% else %}
-            <button class="play" onclick="openLogin()">Start Game</button>
-            {% endif %}
-        </div>
-        <div class="box top-right">Mouse Maze Game<br>
-            <img src="{% static 'home/image/maze.gif' %}" height="100" width="100">
-            {% if user.is_authenticated %}
-            <a href="{% url 'mousedashboard' %}"><button class="play">Start Game</button></a>
-            {% else %}
-            <button class="play" onclick="openLogin()">Start Game</button>
-            {% endif %}
-        </div>
-        <div class="box left">Tic Tac Toe Game<br>
-            <img src="{% static 'home/image/tic.gif' %}" height="100" width="100">
-            {% if user.is_authenticated %}
-            <a href="{% url 'tttdashboard' %}"><button class="play">Start Game</button></a>
-            {% else %}
-            <button class="play" onclick="openLogin()">Start Game</button>
-            {% endif %}
-        </div>
-        <div class="box right">Snake Bite Game<br>
-            <img src="{% static 'home/image/snake.gif' %}" height="100" width="100">
-            {% if user.is_authenticated %}
-            <a href="{% url 'snakedashboard' %}"><button class="play">Start Game</button></a>
-            {% else %}
-            <button class="play" onclick="openLogin()">Start Game</button>
-            {% endif %}
-        </div>
-        <div class="box bottom-center">Quiz Game<br>
-            <img src="{% static 'home/image/quiz.gif' %}" height="100" width="100">
-            {% if user.is_authenticated %}
-            <a href="{% url 'quiz' %}"><button class="play">Start Game</button></a>
-            {% else %}
-            <button class="play" onclick="openLogin()">Start Game</button>
-            {% endif %}
-        </div>
-    </div>
-</div>
-<!-- --------------------------Java script----------------------- -->
-<script>
-//-----------------------Contact Modal-------------------------
-function openModal() {
-  const modal = document.getElementById("contactModal");
-  const overlay = document.getElementById("overlay");
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Zone</title>
+
+  <!-- Google Fonts matched with Home Page -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=Chela+One&display=swap" rel="stylesheet">
   
-  modal.style.display = "block"; // Pehle display block karein
-  overlay.style.display = "block";
+  <link rel="stylesheet" href="{% static 'home/bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'home/fontawesome/css/all.css' %}">
+  <link rel="stylesheet" href="{% static 'home/css/game.css' %}?v=1.2">
+</head>
 
-  // Browser ko render karne ka time dein phir class add karein
-  requestAnimationFrame(() => {
-    modal.classList.add("show");
-  });
-}
-function closeModal() {
-  document.getElementById("contactModal").style.display = "none";
-  document.getElementById("overlay").style.display = "none";
-  document.getElementById("contactModal").classList.remove("show");
-}
-document.getElementById("contactModal").onclick = function(event) {
-    event.stopPropagation();
-};
-//-----------------------Profile Modal-------------------------------
-function openProfile() {
-    const modal = document.getElementById("profileModal");
-    modal.style.display = "block";
-    document.getElementById("overlay").style.display = "block";
-    setTimeout(() => modal.classList.add("show"), 10);
-    
-    loadProfileData();
-}
-function closeProfile() {
-  const modal = document.getElementById("profileModal");
-  modal.style.display = "none";
-  document.getElementById("overlay").style.display = "none";
-  modal.classList.remove("show");
-}
-document.getElementById("profileModal").onclick = function(event) {
-    event.stopPropagation();
-};
-//----------------------Image Preview
-document.getElementById("imageInput").addEventListener("change", function() {
-  const file = this.files[0];
-  const reader = new FileReader();
-  reader.onload = function() {
-    document.getElementById("preview").src = reader.result;
-  }
-  if(file) reader.readAsDataURL(file);
-});
-//----------------------Save Profile
-async function loadProfileData() {
-    try {
-        const response = await fetch('/accounts/get_profile/'); 
-        const data = await response.json();
+<body>
+
+  <!-- Custom Gaming Dynamic Toast Structure -->
+  <div id="gameToast" class="game-toast">
+    <div class="game-toast-icon" id="toastIcon"><i class="fas fa-gamepad"></i></div>
+    <div class="game-toast-content">
+      <div class="game-toast-title" id="toastTitle">System Status</div>
+      <div class="game-toast-msg" id="toastMsg">Status logs...</div>
+    </div>
+  </div>
+
+  <div class="background">
+    <!----------------------- Header ---------------------------------------------->
+    <header>
+      <div class="logo">
+        <img src="{% static 'home/image/logo.png' %}" alt="Logo">
+      </div>
+
+      <nav class="nav-links">
+        <a href="/">HOME</a>
+        <a href="{% url 'game' %}">GAMES</a>
+        <a href="#" onclick="openModal()">CONTACT</a>
+      </nav>
+
+      <div class="header-right">
+        {% if user.is_authenticated %}
+        <div class="user-badge" onclick="openProfile()">
+          <div class="user-avatar">
+            {% if user.profile.image %}
+            <img src="{{ user.profile.image.url }}" id="navProfileImg">
+            {% else %}
+            <img src="{% static 'home/image/default.png' %}" id="navProfileImg">
+            {% endif %}
+          </div>
+
+          <div class="user-info">
+            <span class="user-name">{{ user.username }}</span>
+            <span class="user-profession">
+              {{ user.profile.profession|default:"Gamer" }}
+            </span>
+          </div>
+        </div>
+        {% else %}
+        <button class="login-btn" onclick="openLogin()">
+          LOGIN / REGISTER
+        </button>
+        {% endif %}
+      </div>
+    </header>
+
+    <!----------------------- Contact Modal ----------------------------->
+    <div id="contactModal">
+      <h2>CONTACT US</h2>
+      <div style="text-align:left; margin-bottom: 20px;">
+        <p style="color: #ffffff; margin-bottom: 12px;">
+          <i class="fas fa-user-shield" style="color: #d5f218; margin-right: 10px; width: 20px;"></i>
+          SWATI GAREWAL
+        </p>
+        <p style="margin-bottom: 12px;">
+          <i class="fa-regular fa-envelope" style="color: #d23b08; margin-right: 10px; width: 20px;"></i>
+          <a href="mailto:swatigarewal01@gmail.com"
+            style="text-decoration: none; color: #ffffff;">swatigarewal01@gmail.com</a>
+        </p>
+        <p style="margin-bottom: 12px;">
+          <i class="fab fa-github" style="color: #ffffff; margin-right: 10px; width: 20px;"></i>
+          <a href="https://github.com/SwatiGarewal" target="_blank"
+            style="color: #ffffff; text-decoration: none;">github.com/SwatiGarewal</a>
+        </p>
+        <p style="margin-bottom: 12px;">
+          <i class="fab fa-linkedin" style="color: #0077b5; margin-right: 10px; width: 20px;"></i>
+          <a href="https://www.linkedin.com/in/swati-garewal-57189b263" target="_blank"
+            style="color: #ffffff; text-decoration: none; font-size: 11.8px;">linkedin.com/in/swati-garewal-57189b263</a>
+        </p>
+      </div>
+      <button style="background-color: aqua; border-radius: 20px;" onclick="closeModal()">Close</button>
+    </div>
+
+    <!-- -------------------- Profile Modal ---------------------- -->
+    <div id="profileModal" tabindex="0">
+      <div id="formSection">
+        <h2>PROFILE UPDATE</h2>
+        <input type="file" id="imageInput"><br><br>
+        <img id="preview" width="80">
+        <p style="color: rgb(255, 255, 21); text-align: center;">click & scroll down</p>
+        <input type="text" id="name" name="username" value="{{ user.username }}" placeholder="Name"><br>
+        <input type="email" id="email" name="email" value="{{ user.email }}" placeholder="Email"><br>
+        <input type="text" id="mobile" placeholder="Mobile"><br>
+        <select id="gender">
+          <option value="">Gender</option>
+          <option>Male</option>
+          <option>Female</option>
+        </select><br>
+        <input type="date" id="dob"><br>
+        <input type="text" id="profession" value="{{ user.profile.profession|default:'' }}"
+          placeholder="Profession"><br><br>
+        <button onclick="saveProfileToServer(this)">Save</button>
+        <button style="background-color: aqua; border-radius: 20px;" onclick="closeProfile()">Close</button>
+        <a href="{% url 'logout' %}"><button style="background-color: aqua; border-radius: 20px;">Logout</button></a>
+      </div>
+
+      <!-------------------- Profile View ------------------------>
+      <div id="profileView" style="display:none;">
+        <h2>
+          <center>MY PROFILE</center>
+        </h2>
+        <img id="viewImg" width="100"><br>
+        <p id="viewName"></p>
+        <p id="viewEmail"></p>
+        <p id="viewMobile"></p>
+        <p id="viewGender"></p>
+        <p id="viewDob"></p>
+        <p id="viewProfession"></p>
+        <button style="background-color: aqua; border-radius: 20px;" onclick="editProfile()">Edit</button>
+        <button style="background-color: aqua; border-radius: 20px;" onclick="closeProfile()">Close</button>
+        <a href="{% url 'logout' %}"><button style="background-color: aqua; border-radius: 20px;">Logout</button></a>
+      </div>
+    </div>
+
+    <!-- -------------------- Login/Register Modal ------------------------->
+    <div id="loginModal">
+      <div id="loginSection">
+        <h2>Login</h2>
+        <form onsubmit="handleLogin(event, this)">
+          {% csrf_token %}
+          <input type="text" id="loginUsername" name="username" placeholder="Username or Email" required>
+          <div class="password-container">
+            <input type="password" name="password" id="loginPassword" placeholder="Password" required>
+            <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('loginPassword', this)"></i>
+          </div>
+
+          <a href="#" onclick="showForgot(); return false;" style="color:yellow; display:block; text-align:left; margin-bottom: 10px;">
+            Forgot Password
+          </a>
+          <button type="submit" id="btnLoginSubmit">Login</button>
+        </form>
+        <p>Don't have account?
+          <span onclick="showRegister()"><u style="color: rgb(238, 255, 0); cursor: pointer;">Register</u></span>
+        </p>
+      </div>
+
+      <div id="registerSection" style="display:none;">
+        <h2>Register</h2>
+        <form id="registerForm" onsubmit="event.preventDefault(); startRegisterVerification(this);">
+          <input type="text" id="regUsername" placeholder="Username" required><br>
+          <input type="email" id="regEmail" placeholder="Email" required><br>
+
+          <div class="password-container">
+            <input type="password" id="regPassword" placeholder="Password" required>
+            <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('regPassword', this)"></i>
+          </div>
+
+          <button type="submit" id="btnRegisterSubmit">Send OTP & Register</button>
+        </form>
+        <p>Already have account?
+          <span onclick="showLogin()"><u style="color: rgb(238, 255, 0); cursor: pointer;">Login</u></span>
+        </p>
+      </div>
+
+      <div id="registerOtpSection" style="display:none;">
+        <h2>Verify Register Email</h2>
+        <p style="color: #00ffff; font-size: 12px;">Enter the verification code sent to your email.</p>
+        <input type="text" id="regOtp" placeholder="Enter OTP"><br>
+        <button type="button" id="btnVerifyRegOtp" onclick="verifyRegisterOTP(this)">Verify & Complete Signup</button>
+        <p>Didn't receive OTP?
+          <span onclick="startRegisterVerification(null)"><u style="color:yellow; cursor:pointer;">Resend OTP</u></span>
+        </p>
+      </div>
+
+      <div id="forgotSection" style="display:none;">
+        <h2>Forgot Password</h2>
+        <form id="forgotForm">
+          {% csrf_token %}
+          <input type="email" id="forgotEmail" placeholder="Enter Registered Email" required><br>
+          <button type="button" id="btnSendOtp" onclick="sendOTP(this)">Send OTP</button>
+        </form>
+        <p>Remember Password?
+          <span onclick="showLogin()">
+            <u style="color:yellow; cursor:pointer;">Login</u></span>
+        </p>
+      </div>
+
+      <div id="otpSection" style="display:none;">
+        <h2>Verify OTP</h2>
+        <input type="text" id="otp" placeholder="Enter OTP"><br>
+        <button type="button" id="btnVerifyOtp" onclick="verifyOTP(this)">Verify OTP</button>
+        <p>Didn't receive OTP?
+          <span onclick="resendOTP(this)"><u style="color:yellow; cursor:pointer;">Resend OTP</u></span>
+        </p>
+      </div>
+
+      <div id="resetSection" style="display:none;">
+        <h2>Reset Password</h2>
+
+        <div class="password-container">
+          <input type="password" id="newPassword" placeholder="New Password">
+          <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('newPassword', this)"></i>
+        </div>
+
+        <div class="password-container">
+          <input type="password" id="confirmPassword" placeholder="Confirm Password">
+          <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('confirmPassword', this)"></i>
+        </div>
+
+        <button type="button" id="btnResetPass" onclick="resetPassword(this)">Update Password</button>
+      </div>
+
+      <button onclick="closeLogin()">Close</button>
+    </div>
+    <div id="overlay" onclick="closeModal(); closeProfile(); closeLogin();"></div>
+
+    <!-- -------------------- Content Grid ----------------------------------- -->
+    <div id="background">
+      <div class="arcade-wrapper">
         
-        if (response.ok) {
-            // Check karein ki kya user ne pehle kabhi profile save ki hai (e.g., profession ya mobile fill kiya hai)
-            if (data.mobile || data.email) {
-                document.getElementById('formSection').style.display = 'none';
-                document.getElementById('profileView').style.display = 'block';
-                
-                // View fields fill karein
-                document.getElementById('viewName').innerText = "Name: " + (data.name || "N/A");
-                document.getElementById('viewEmail').innerText = "Email: " + (data.email || "N/A");
-                document.getElementById('viewMobile').innerText = "Mobile: " + (data.mobile || "N/A");
-                document.getElementById('viewGender').innerText = "Gender: " + (data.gender || "N/A");
-                let dob = data.dob;
-                if(dob){
-                  let parts = dob.split("-");
-                  dob = parts[2] + "-" + parts[1] + "-" + parts[0];
-                       }
-                document.getElementById('viewDob').innerText = "DOB: " + (dob || "N/A");
-                document.getElementById('viewProfession').innerText = "Profession: " + (data.profession || "Gamer");
-                if(data.image_url) {
-                    document.getElementById('viewImg').src = data.image_url;
-                }
-            }   else {
-                // Bilkul naya user hai toh Update Profile (Form) dikhao
-                document.getElementById('formSection').style.display = 'block';
-                document.getElementById('profileView').style.display = 'none';
-            }
-        }
-    } catch (e) {
-        document.getElementById('formSection').style.display = 'block';
-    }
-}
-async function saveProfileToServer() {
-    let formData = new FormData();
-    
-    // HTML IDs ke hisaab se values pick karein
-    formData.append("name", document.getElementById('name').value);
-    formData.append("email", document.getElementById('email').value);
-    formData.append("mobile", document.getElementById('mobile').value);
-    formData.append("gender", document.getElementById('gender').value);
-    formData.append("dob", document.getElementById('dob').value);
-    formData.append("profession", document.getElementById('profession').value);
-    
-    const imgInput = document.getElementById('imageInput');
-    if(imgInput.files[0]) {
-        formData.append("image", imgInput.files[0]);
+        <!-- Center Floating Logo -->
+        <div class="center-logo">
+          <img src="{% static 'home/image/logo.png' %}" alt="Logo">
+        </div>
+
+        <!-- Surround Boxes -->
+        <div class="box top-left">
+          Memory Match Game<br>
+          <img src="{% static 'home/image/card.gif' %}">
+          {% if user.is_authenticated %}
+          <a href="{% url 'matchdashboard' %}"><button class="play">Start Game</button></a>
+          {% else %}
+          <button class="play" onclick="openLogin()">Start Game</button>
+          {% endif %}
+        </div>
+
+        <div class="box top-right">
+          Mouse Maze Game<br>
+          <img src="{% static 'home/image/maze.gif' %}">
+          {% if user.is_authenticated %}
+          <a href="{% url 'mousedashboard' %}"><button class="play">Start Game</button></a>
+          {% else %}
+          <button class="play" onclick="openLogin()">Start Game</button>
+          {% endif %}
+        </div>
+
+        <div class="box left">
+          Tic Tac Toe Game<br>
+          <img src="{% static 'home/image/tic.gif' %}">
+          {% if user.is_authenticated %}
+          <a href="{% url 'tttdashboard' %}"><button class="play">Start Game</button></a>
+          {% else %}
+          <button class="play" onclick="openLogin()">Start Game</button>
+          {% endif %}
+        </div>
+
+        <div class="box right">
+          Snake Bite Game<br>
+          <img src="{% static 'home/image/snake.gif' %}">
+          {% if user.is_authenticated %}
+          <a href="{% url 'snakedashboard' %}"><button class="play">Start Game</button></a>
+          {% else %}
+          <button class="play" onclick="openLogin()">Start Game</button>
+          {% endif %}
+        </div>
+
+        <div class="box bottom-center">
+          Quiz Game<br>
+          <img src="{% static 'home/image/quiz.gif' %}">
+          {% if user.is_authenticated %}
+          <a href="{% url 'quiz' %}"><button class="play">Start Game</button></a>
+          {% else %}
+          <button class="play" onclick="openLogin()">Start Game</button>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+
+    <!-- -------------------- Footer -------------------------------- -->
+    <footer>
+      <div>
+        <p>© 2025 LearnCodePlay | All Rights Reserved</p>
+        <p>Made With ❤️ For Coding Learners</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- -------------------- JavaScript ----------------------------- -->
+  <script>
+    /* Helper to set button loading state */
+    function setBtnLoading(btn, isLoading, loadingText = "Processing... ⏳", originalText = "") {
+      if (!btn) return;
+      if (isLoading) {
+        btn.dataset.origText = originalText || btn.innerText;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${loadingText}`;
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = btn.dataset.origText || "Submit";
+      }
     }
 
-    const response = await fetch('/accounts/save_profile/', { // views.py ke path ke hisaab se
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: formData
+    function showGameNotification(title, message, theme = 'default') {
+      const toast = document.getElementById("gameToast");
+      const tTitle = document.getElementById("toastTitle");
+      const tMsg = document.getElementById("toastMsg");
+      const tIcon = document.getElementById("toastIcon");
+
+      if (theme === 'success') {
+        toast.className = "game-toast success-theme";
+        tIcon.innerHTML = '<i class="fas fa-laptop-code"></i>';
+      } else if (theme === 'error') {
+        toast.className = "game-toast error-theme";
+        tIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
+      } else {
+        toast.className = "game-toast";
+        tIcon.innerHTML = '<i class="fas fa-gamepad"></i>';
+      }
+
+      tTitle.innerText = title;
+      tMsg.innerText = message;
+      toast.classList.add("show");
+
+      if (window.toastTimeout) clearTimeout(window.toastTimeout);
+
+      window.toastTimeout = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 4500);
+    }
+
+    function togglePasswordVisibility(inputId, iconElement) {
+      const passwordInput = document.getElementById(inputId);
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        iconElement.classList.remove("fa-eye");
+        iconElement.classList.add("fa-eye-slash");
+      } else {
+        passwordInput.type = "password";
+        iconElement.classList.remove("fa-eye-slash");
+        iconElement.classList.add("fa-eye");
+      }
+    }
+
+    function openModal() {
+      document.getElementById("contactModal").style.display = "block";
+      document.getElementById("overlay").style.display = "block";
+      setTimeout(() => {
+        document.getElementById("contactModal").classList.add("show");
+      }, 10);
+    }
+    function closeModal() {
+      document.getElementById("contactModal").style.display = "none";
+      document.getElementById("overlay").style.display = "none";
+      document.getElementById("contactModal").classList.remove("show");
+    }
+    document.getElementById("contactModal").onclick = function (event) {
+      event.stopPropagation();
+    };
+
+    function openProfile() {
+      const modal = document.getElementById("profileModal");
+      modal.style.display = "block";
+      document.getElementById("overlay").style.display = "block";
+      setTimeout(() => modal.classList.add("show"), 10);
+      loadProfileData();
+    }
+    function closeProfile() {
+      const modal = document.getElementById("profileModal");
+      modal.style.display = "none";
+      document.getElementById("overlay").style.display = "none";
+      modal.classList.remove("show");
+      document.getElementById("formSection").style.display = "block";
+      document.getElementById("profileView").style.display = "none";
+      document.getElementById("preview").src = "";
+      document.getElementById("imageInput").value = "";
+    }
+    document.getElementById("profileModal").onclick = function (event) {
+      event.stopPropagation();
+    };
+
+    document.getElementById("imageInput").addEventListener("change", function () {
+      const file = this.files[0];
+      const reader = new FileReader();
+      reader.onload = function () {
+        document.getElementById("preview").src = reader.result;
+      }
+      if (file) reader.readAsDataURL(file);
     });
 
-    const data = await response.json();
+    async function loadProfileData() {
+      try {
+        const response = await fetch('/accounts/get_profile/');
+        if (!response.ok) return;
+        const data = await response.json();
 
-    if (data.status === "success") {
-        alert("Profile Saved Successfully ✅");
-        // Save hone ke baad page reload karein taaki header badge update ho jaye
-        location.reload(); 
-    } else {
-        alert("Error saving data ❌");
-    }
-}
-//----------------------Edit Profile------------------------------------
-function editProfile() {
-  document.getElementById("profileView").style.display = "none";
-  document.getElementById("formSection").style.display = "block";
-}
-// ---------------------login/Register---------------------------
-function openLogin() {
-    const modal = document.getElementById("loginModal");
-    modal.style.display = "block";
-    document.getElementById("overlay").style.display = "block";
-    document.getElementById("loginSection").style.display = "block";
-    document.getElementById("registerSection").style.display = "none";
-    setTimeout(() => {
-    modal.classList.add("show");
-  }, 10);
-}
-function closeLogin() {
-  const modal = document.getElementById("loginModal");
-  modal.style.display = "none";
-  document.getElementById("overlay").style.display = "none";
-  modal.classList.remove("show");
-}
-document.getElementById("loginModal").onclick = function(event) {
-    event.stopPropagation();
-};
-function showLogin() {
-  document.getElementById("registerSection").style.display = "none";
-  document.getElementById("loginSection").style.display = "block";
-}
-function showRegister() {
-  document.getElementById("loginSection").style.display = "none";
-  document.getElementById("registerSection").style.display = "block";
-}
-// -------------------------User Name identification----------------
-function getCookie(name) {
-    let value = null;
-    if (document.cookie) {
-        let cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            cookie = cookie.trim();
-            if (cookie.startsWith(name + '=')) {
-                value = decodeURIComponent(cookie.substring(name.length + 1));
-            }
+        if (data.image_url) {
+          const navImg = document.getElementById('navProfileImg');
+          if (navImg) navImg.src = data.image_url;
         }
-    }
-    return value;
-}
-window.addEventListener("load", function(){
-    const params = new URLSearchParams(window.location.search);
 
-    if(params.get("showLogin") === "true"){
-        openLogin();
+        if (data.mobile || data.email || data.gender || data.dob) {
+          document.getElementById('formSection').style.display = 'none';
+          document.getElementById('profileView').style.display = 'block';
+
+          document.getElementById('viewName').innerText = "Name: " + (data.name || "N/A");
+          document.getElementById('viewEmail').innerText = "Email: " + (data.email || "N/A");
+          document.getElementById('viewMobile').innerText = "Mobile: " + (data.mobile || "N/A");
+          document.getElementById('viewGender').innerText = "Gender: " + (data.gender || "N/A");
+
+          let dob = data.dob;
+          if (dob && dob.includes("-")) {
+            let parts = dob.split("-");
+            dob = parts[2] + "-" + parts[1] + "-" + parts[0];
+          }
+          document.getElementById('viewDob').innerText = "DOB: " + (dob || "N/A");
+          document.getElementById('viewProfession').innerText = "Profession: " + (data.profession || "Gamer");
+
+          if (data.image_url) {
+            document.getElementById('viewImg').src = data.image_url;
+          }
+        } else {
+          document.getElementById('formSection').style.display = 'block';
+          document.getElementById('profileView').style.display = 'none';
+        }
+      } catch (e) {
+        document.getElementById('formSection').style.display = 'block';
+      }
     }
-});
-</script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadProfileData();
+    });
+
+    async function saveProfileToServer(btnElement) {
+      setBtnLoading(btnElement, true, "Saving... ⏳", "Save");
+
+      let formData = new FormData();
+      formData.append("name", document.getElementById('name').value);
+      formData.append("email", document.getElementById('email').value);
+      formData.append("mobile", document.getElementById('mobile').value);
+      formData.append("gender", document.getElementById('gender').value);
+      formData.append("dob", document.getElementById('dob').value);
+      formData.append("profession", document.getElementById('profession').value);
+
+      const imgInput = document.getElementById('imageInput');
+      if (imgInput.files[0]) {
+        formData.append("image", imgInput.files[0]);
+      }
+
+      try {
+        const response = await fetch('/accounts/save_profile/', {
+          method: 'POST',
+          headers: { 'X-CSRFToken': getCookie('csrftoken') },
+          body: formData
+        });
+
+        setBtnLoading(btnElement, false, "", "Save");
+
+        if (!response.ok) {
+          showGameNotification("SERVER ERROR", "Failed to connect to mainframe database.", "error");
+          return;
+        }
+        const data = await response.json();
+
+        if (data.status === "success") {
+          showGameNotification("PROFILE INJECTED", "Layout components mapped successfully! ✅", "success");
+          setTimeout(() => location.reload(), 1200);
+        } else {
+          showGameNotification("COMPILE ERROR", "Error parsing database structures ❌", "error");
+        }
+      } catch (err) {
+        setBtnLoading(btnElement, false, "", "Save");
+        showGameNotification("NETWORK ERROR", "Unable to connect to server.", "error");
+      }
+    }
+
+    function editProfile() {
+      document.getElementById("profileView").style.display = "none";
+      document.getElementById("formSection").style.display = "block";
+    }
+
+    function openLogin() {
+      const modal = document.getElementById("loginModal");
+      modal.style.display = "block";
+      document.getElementById("overlay").style.display = "block";
+      hideAllSections();
+      document.getElementById("loginSection").style.display = "block";
+      setTimeout(() => { modal.classList.add("show"); }, 10);
+    }
+    function closeLogin() {
+      resetPasswordToggleIcons();
+      clearForgotPassword();
+      hideAllSections();
+      const modal = document.getElementById("loginModal");
+      modal.style.display = "none";
+      document.getElementById("overlay").style.display = "none";
+      modal.classList.remove("show");
+    }
+    document.getElementById("loginModal").onclick = function (event) {
+      event.stopPropagation();
+    };
+
+    function hideAllSections() {
+      document.getElementById("loginSection").style.display = "none";
+      document.getElementById("registerSection").style.display = "none";
+      document.getElementById("registerOtpSection").style.display = "none";
+      document.getElementById("forgotSection").style.display = "none";
+      document.getElementById("otpSection").style.display = "none";
+      document.getElementById("resetSection").style.display = "none";
+    }
+    function showForgot() {
+      hideAllSections();
+      document.getElementById("forgotSection").style.display = "block";
+    }
+    function showOTP() {
+      hideAllSections();
+      document.getElementById("otpSection").style.display = "block";
+    }
+    function showReset() {
+      hideAllSections();
+      document.getElementById("resetSection").style.display = "block";
+    }
+    function showLogin() {
+      hideAllSections();
+      document.getElementById("loginSection").style.display = "block";
+    }
+    function showRegister() {
+      hideAllSections();
+      document.getElementById("registerSection").style.display = "block";
+    }
+
+    function resetPasswordToggleIcons() {
+      const inputIds = ['loginPassword', 'regPassword', 'newPassword', 'confirmPassword'];
+      inputIds.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+          input.type = "password";
+          const icon = input.nextElementSibling;
+          if (icon && icon.classList.contains('toggle-password')) {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+          }
+        }
+      });
+    }
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        let cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          let cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    window.addEventListener("load", function () {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("showLogin") === "true") {
+        openLogin();
+      }
+    });
+
+    async function startRegisterVerification(formElement) {
+      const btn = document.getElementById("btnRegisterSubmit");
+      const email = document.getElementById("regEmail").value.trim();
+      
+      if (email === "") {
+        showGameNotification("INPUT REQUIRED", "Please enter a valid email for registration.", "error");
+        return;
+      }
+
+      setBtnLoading(btn, true, "Sending OTP... ⏳", "Send OTP & Register");
+
+      const formData = new FormData();
+      formData.append("email", email);
+
+      try {
+        const response = await fetch("/accounts/send-register-otp/", {
+          method: "POST",
+          headers: { "X-CSRFToken": getCookie("csrftoken") },
+          body: formData
+        });
+
+        setBtnLoading(btn, false, "", "Send OTP & Register");
+
+        if (!response.ok) {
+          showGameNotification("SERVER ERROR", "Failed to transmit signup verification code.", "error");
+          return;
+        }
+        const data = await response.json();
+        if (data.status === "success") {
+          showGameNotification("VERIFICATION DISPATCHED 🚀", "OTP key packet routed to: " + email, "success");
+          hideAllSections();
+          document.getElementById("registerOtpSection").style.display = "block";
+        } else {
+          showGameNotification("TRANSMIT FAILED ❌", data.message, "error");
+        }
+      } catch (err) {
+        setBtnLoading(btn, false, "", "Send OTP & Register");
+        showGameNotification("NETWORK ERROR", "Unable to connect to server.", "error");
+      }
+    }
+
+    async function verifyRegisterOTP(btnElement) {
+      const otp = document.getElementById("regOtp").value.trim();
+      const username = document.getElementById("regUsername").value.trim();
+      const email = document.getElementById("regEmail").value.trim();
+      const password = document.getElementById("regPassword").value;
+
+      if (otp === "") {
+        showGameNotification("INPUT REQUIRED", "Please enter the verification OTP.", "error");
+        return;
+      }
+
+      setBtnLoading(btnElement, true, "Verifying... ⏳", "Verify & Complete Signup");
+
+      const formData = new FormData();
+      formData.append("username", username);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("otp", otp);
+
+      try {
+        const response = await fetch("/accounts/register/", {
+          method: "POST",
+          headers: { "X-CSRFToken": getCookie("csrftoken") },
+          body: formData
+        });
+
+        setBtnLoading(btnElement, false, "", "Verify & Complete Signup");
+
+        if (!response.ok) {
+          showGameNotification("SERVER ERROR", "Data structure sync sequence timed out.", "error");
+          return;
+        }
+        const data = await response.json();
+        if (data.status === "success") {
+          showGameNotification("ACCOUNT LINKED 🎮", "Signup sequence verified successfully!", "success");
+          setTimeout(() => { location.reload(); }, 1200);
+        } else {
+          showGameNotification("REGISTRATION ERROR 🛑", data.message, "error");
+        }
+      } catch (err) {
+        setBtnLoading(btnElement, false, "", "Verify & Complete Signup");
+        showGameNotification("NETWORK ERROR", "Unable to connect to server.", "error");
+      }
+    }
+
+    let userEmail = "";
+    async function sendOTP(btnElement) {
+      const emailInput = document.getElementById("forgotEmail").value.trim();
+      if (emailInput == "") {
+        showGameNotification("INPUT REQUIRED", "Please fill in your registered email.", "error");
+        return;
+      }
+
+      const btn = btnElement || document.getElementById("btnSendOtp");
+      setBtnLoading(btn, true, "Sending OTP... ⏳", "Send OTP");
+
+      userEmail = emailInput;
+      const formData = new FormData();
+      formData.append("email", userEmail);
+
+      try {
+        const response = await fetch("/accounts/forgot-password/", {
+          method: "POST",
+          headers: { "X-CSRFToken": getCookie("csrftoken") },
+          body: formData
+        });
+
+        setBtnLoading(btn, false, "", "Send OTP");
+
+        if (!response.ok) {
+          showGameNotification("SERVER ERROR", "Failed to transfer verification packet.", "error");
+          return;
+        }
+        const data = await response.json();
+        if (data.status === "success") {
+          showGameNotification("OTP TRANSMITTED 🚀", "Verification key dispatched to: " + userEmail, "success");
+          showOTP();
+        } else {
+          showGameNotification("TRANSMIT FAILED ❌", data.message, "error");
+        }
+      } catch (err) {
+        setBtnLoading(btn, false, "", "Send OTP");
+        showGameNotification("NETWORK ERROR", "Unable to connect to server.", "error");
+      }
+    }
+
+    async function verifyOTP(btnElement) {
+      const otp = document.getElementById("otp").value.trim();
+      if (otp == "") {
+        showGameNotification("INPUT REQUIRED", "Please input verification passcode key.", "error");
+        return;
+      }
+
+      setBtnLoading(btnElement, true, "Verifying... ⏳", "Verify OTP");
+
+      const formData = new FormData();
+      formData.append("email", userEmail);
+      formData.append("otp", otp);
+
+      try {
+        const response = await fetch("/accounts/verify-otp/", {
+          method: "POST",
+          headers: { "X-CSRFToken": getCookie("csrftoken") },
+          body: formData
+        });
+
+        setBtnLoading(btnElement, false, "", "Verify OTP");
+
+        if (!response.ok) {
+          showGameNotification("SERVER ERROR", "System authentication sequence failed.", "error");
+          return;
+        }
+        const data = await response.json();
+        if (data.status === "success") {
+          showGameNotification("ACCESS GRANTED 🔓", "OTP Verified Successfully!", "success");
+          showReset();
+        } else {
+          showGameNotification("ACCESS DENIED 🛑", data.message, "error");
+        }
+      } catch (err) {
+        setBtnLoading(btnElement, false, "", "Verify OTP");
+        showGameNotification("NETWORK ERROR", "Unable to connect to server.", "error");
+      }
+    }
+
+    async function resetPassword(btnElement) {
+      const password = document.getElementById("newPassword").value;
+      const confirm = document.getElementById("confirmPassword").value;
+
+      if (password == "" || confirm == "") {
+        showGameNotification("INPUT REQUIRED", "Please fill all password fields.", "error");
+        return;
+      }
+      if (password !== confirm) {
+        showGameNotification("SYNC ERROR", "Passwords mismatch sequence.", "error");
+        return;
+      }
+      if (password.length < 8) {
+        showGameNotification("SECURITY FAULT", "Password length configuration too short.", "error");
+        return;
+      }
+
+      setBtnLoading(btnElement, true, "Updating... ⏳", "Update Password");
+
+      const formData = new FormData();
+      formData.append("email", userEmail);
+      formData.append("password", password);
+
+      try {
+        const response = await fetch("/accounts/reset-password/", {
+          method: "POST",
+          headers: { "X-CSRFToken": getCookie("csrftoken") },
+          body: formData
+        });
+
+        setBtnLoading(btnElement, false, "", "Update Password");
+
+        if (!response.ok) {
+          showGameNotification("SERVER ERROR", "Mainframe cipher update failed.", "error");
+          return;
+        }
+        const data = await response.json();
+        if (data.status === "success") {
+          showGameNotification("SYSTEM UPDATED 🛠️", "Security cipher rebuilt successfully!", "success");
+          userEmail = "";
+          clearForgotPassword();
+          showLogin();
+        } else {
+          showGameNotification("UPDATE ERROR ❌", data.message, "error");
+        }
+      } catch (err) {
+        setBtnLoading(btnElement, false, "", "Update Password");
+        showGameNotification("NETWORK ERROR", "Unable to connect to server.", "error");
+      }
+    }
+
+    async function resendOTP(btnElement) { await sendOTP(btnElement); }
+
+    function clearForgotPassword() {
+      document.getElementById("forgotEmail").value = "";
+      document.getElementById("otp").value = "";
+      document.getElementById("newPassword").value = "";
+      document.getElementById("confirmPassword").value = "";
+      document.getElementById("regUsername").value = "";
+      document.getElementById("regEmail").value = "";
+      document.getElementById("regPassword").value = "";
+      document.getElementById("regOtp").value = "";
+      resetPasswordToggleIcons();
+    }
+
+    async function handleLogin(event, formElement) {
+      if (event) event.preventDefault();
+
+      const btn = document.getElementById("btnLoginSubmit");
+      const usernameInput = document.getElementById("loginUsername");
+      const passwordInput = document.getElementById("loginPassword");
+
+      const username = usernameInput ? usernameInput.value.trim() : "";
+      const password = passwordInput ? passwordInput.value : "";
+
+      if (!username || !password) {
+        showGameNotification("INPUT REQUIRED", "Please enter username and password.", "error");
+        return;
+      }
+
+      setBtnLoading(btn, true, "Authenticating... ⏳", "Login");
+
+      const formData = new FormData();
+      formData.append("username", username);
+      formData.append("password", password);
+
+      try {
+        const response = await fetch("/accounts/login/", {
+          method: "POST",
+          headers: { "X-CSRFToken": getCookie("csrftoken") },
+          body: formData
+        });
+
+        setBtnLoading(btn, false, "", "Login");
+
+        const data = await response.json();
+
+        if (response.ok && data.status === "success") {
+          showGameNotification("ACCESS GRANTED 🔓", data.message, "success");
+          setTimeout(() => { location.reload(); }, 1200);
+        } else {
+          showGameNotification("LOGIN FAILED 🛑", data.message || "Invalid Credentials", "error");
+        }
+      } catch (err) {
+        setBtnLoading(btn, false, "", "Login");
+        showGameNotification("SERVER ERROR ❌", "Unable to connect to server.", "error");
+      }
+    }
+  </script>
 </body>
+
 </html>

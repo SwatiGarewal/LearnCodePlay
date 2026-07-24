@@ -1,308 +1,524 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz Dashboard</title>
-<link rel="stylesheet" href="{% static 'home/bootstrap/css/bootstrap.min.css' %}">
-<link rel="stylesheet" href="{% static 'home/fontawesome/css/all.css' %}">
-<!-- -------------------css------------------------------ -->
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:url("{% static 'home/image/background2.png' %}");
-  height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:white;
-  width: 100%;
-}
-.main{
-  display:grid;
-  grid-template-columns:1fr 2fr;
-  gap:20px;
-  width:90%;
-  max-width:900px;
-  height:90vh;
-}
-.card{
-  background:rgba(255,255,255,0.1);
-  backdrop-filter:blur(10px);
-  padding:20px;
-  border-radius:20px;
-  text-align:center;
-}
-.btn{
-  padding:10px;
-  margin:5px;
-  width:100%;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  background:#00ffff;
-}
- .btn:hover{
-  background-color:#15ff00;
-  color: #111;
-}
-#question{
-  background:rgba(0,0,0,0.3);
-  padding:10px;
-  border-radius:10px;
-  margin-bottom:10px;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cyberpunk Quiz Pro</title>
 
-.option{
-  background:#fff;
-  color:black;
-  margin:5px;
-  padding:10px;
-  border-radius:10px;
-  cursor:pointer;
-  transition:0.3s;
-}
+  <!-- Google Fonts Matched with Homepage -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap">
+  <link rel="stylesheet" href="{% static 'home/bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'home/fontawesome/css/all.css' %}">
 
-.option:hover{
-  background:#00ffff;
-}
+  <!-- 📄 html2pdf CDN Library for Client-side PDF Download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-.selected{
-  background:#00ff99 !important;
-}
+  <!-- ------------------ CSS STYLING ------------------ -->
+  <style>
+    *,
+    *:before,
+    *:after {
+      box-sizing: border-box;
+    }
 
-.correct{
-  background:lightgreen !important;
-}
+    body {
+      margin: 0;
+      font-family: "Share Tech Mono", monospace;
+      background: url("{% static 'home/image/background2.png' %}") no-repeat center/cover fixed;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      width: 100%;
+      padding: 30px 0;
+    }
 
-.wrong{
-  background:#ff7b7b !important;
-}
-.back-btn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  border: none;
-  border-radius: 20px;
-  height: 60px;
-  width: 100px;
-  background: linear-gradient(45deg, #151e52, #00eeff);
-  color: rgb(252, 251, 251);
-  font-weight: bold;
-  font-size: 20px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.back-btn:hover {
-  background: #00ffff;
-  color: black;
-  box-shadow: 0 0 10px #00ffff,
-              0 0 20px #00ffff;
-  transform: scale(1.1);
-}
-</style>
+    .main {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 25px;
+      width: 92%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: rgba(12, 16, 28, 0.85);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      padding: 25px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      transition: border-color 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(0, 255, 255, 0.5);
+    }
+
+    /* 🎯 Neon Glowing Headings */
+    .card-heading {
+      font-family: "Orbitron", sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #00ffff;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    .game-title {
+      font-size: 26px;
+      color: #f1fd47;
+      text-shadow: 0 0 12px rgba(241, 253, 71, 0.6);
+    }
+
+    .btn-lang {
+      padding: 12px 18px;
+      margin: 8px 0;
+      width: 100%;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 12px;
+      cursor: pointer;
+      background: rgba(17, 25, 40, 0.9);
+      color: #00ffff;
+      font-family: "Orbitron", sans-serif;
+      font-weight: bold;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      letter-spacing: 1px;
+    }
+
+    .btn-lang:hover, .btn-lang.active {
+      background: #00ffff;
+      color: #000;
+      box-shadow: 0 0 15px #00ffff;
+      transform: translateY(-2px);
+    }
+
+    .btn-pdf {
+      background: linear-gradient(45deg, #00ff94, #00c3ff) !important;
+      color: #000 !important;
+      box-shadow: 0 0 12px rgba(0, 255, 148, 0.5);
+      margin-top: 10px;
+    }
+
+    .btn-pdf:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 20px rgba(0, 255, 148, 0.8);
+    }
+
+    #question-box {
+      background: rgba(7, 11, 20, 0.9);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+      padding: 18px;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #f1fd47;
+      min-height: 70px;
+      max-height: 420px;
+      overflow-y: auto;
+      text-align: center;
+    }
+
+    #question-box::-webkit-scrollbar {
+      width: 6px;
+    }
+    #question-box::-webkit-scrollbar-thumb {
+      background: #00ffff;
+      border-radius: 10px;
+    }
+
+    .option {
+      background: rgba(22, 30, 49, 0.9);
+      color: #e2e8f0;
+      border: 1px solid rgba(0, 255, 255, 0.15);
+      margin: 10px 0;
+      padding: 12px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .option:hover {
+      background: rgba(0, 255, 255, 0.15);
+      border-color: #00ffff;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+
+    .selected {
+      background: #00ffff !important;
+      color: #000 !important;
+      font-weight: bold;
+    }
+
+    .correct {
+      background: #00ff94 !important;
+      color: #000 !important;
+      font-weight: bold;
+      box-shadow: 0 0 12px #00ff94 !important;
+    }
+
+    .wrong {
+      background: #ff3b3b !important;
+      color: #ffffff !important;
+      font-weight: bold;
+      box-shadow: 0 0 12px #ff3b3b !important;
+    }
+
+    .score-badge {
+      font-family: "Orbitron", sans-serif;
+      color: #f1fd47;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    /* Result item cards */
+    .result-item {
+      background: rgba(18, 26, 43, 0.85);
+      border-left: 4px solid #00ffff;
+      border-radius: 8px;
+      padding: 12px 15px;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    .result-item.correct-item {
+      border-left-color: #00ff94;
+    }
+
+    .result-item.wrong-item {
+      border-left-color: #ff3b3b;
+    }
+
+    /* Back Button */
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      border: none;
+      border-radius: 20px;
+      height: 50px;
+      width: 100px;
+      background: linear-gradient(45deg, #151e52, #00eeff);
+      color: #ffffff;
+      font-family: "Orbitron", sans-serif;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+      z-index: 999;
+    }
+
+    .back-btn:hover {
+      background: #00ffff;
+      color: black;
+      box-shadow: 0 0 15px #00ffff;
+      transform: scale(1.08);
+    }
+
+    /* Hidden Container specifically rendered for clean PDF print */
+    #pdfReportTemplate {
+      display: none;
+      background: #ffffff;
+      color: #000000;
+      padding: 30px;
+      font-family: Arial, sans-serif;
+    }
+
+    /* ==================== 📱 MOBILE RESPONSIVE LAYOUT ==================== */
+    @media (max-width: 900px) {
+      body {
+        padding-top: 80px;
+      }
+
+      .main {
+        grid-template-columns: 1fr;
+        width: 90%;
+        gap: 20px;
+      }
+
+      .card-heading {
+        font-size: 20px;
+      }
+
+      .back-btn {
+        top: 12px;
+        right: 12px;
+        height: 40px;
+        width: 80px;
+        font-size: 13px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<!-- ----------------------dashboard--------------------------->
-<div class="main">
-  <div class="card">
-    <h2>Select Language</h2>
-    <button class="btn" onclick="startQuiz('python')">Python</button>
-    <button class="btn" onclick="startQuiz('java')">Java</button>
-    <button class="btn" onclick="startQuiz('c')">C</button>
-    <button class="btn" onclick="startQuiz('cpp')">C++</button>
+
+  <!-- --------------- DASHBOARD MAIN CONTAINER ------------------- -->
+  <div class="main">
+
+    <!-- 1. SELECT LANGUAGE PANEL -->
+    <div class="card">
+      <h2 class="card-heading">Categories</h2>
+      <button class="btn-lang" onclick="fetchLiveQuiz('python', this)">PYTHON</button>
+      <button class="btn-lang" onclick="fetchLiveQuiz('java', this)">JAVA</button>
+      <button class="btn-lang" onclick="fetchLiveQuiz('c', this)">C CODE</button>
+      <button class="btn-lang" onclick="fetchLiveQuiz('cpp', this)">C++</button>
+    </div>
+
+    <!-- 2. QUIZ INTERFACE PANEL -->
+    <div class="card">
+      <h2 class="card-heading game-title" id="title">Select Category</h2>
+      <p id="qno" style="text-align: center; color: #a0aec0; font-size: 13px;"></p>
+
+      <div id="question-box">Choose a programming language from left to load live dynamic API questions!</div>
+
+      <div id="options"></div>
+
+      <div class="score-badge" id="scoreContainer">Score: <span id="score">0</span></div>
+    </div>
+
+    <!-- BACK BUTTON -->
+    <a href="{% url 'game' %}"><button class="back-btn">Back</button></a>
+
   </div>
-  <div class="card">
-    <h2 id="title">Quiz Game</h2>
-    <p id="qno"></p>
-    <div id="question">Select language</div>
-    <div id="options"></div>
-    <p>Score: <span id="score">0</span></p>
+
+  <!-- 🖨️ HIDDEN PRINT TEMPLATE FOR PDF GENERATION -->
+  <div id="pdfReportTemplate">
+    <div style="text-align: center; border-bottom: 2px solid #00ffff; padding-bottom: 15px; margin-bottom: 20px;">
+      <h1 style="color: #0b1120; margin: 0; font-size: 26px;">LEARN CODE PLAY</h1>
+      <h3 style="color: #0284c7; margin: 5px 0 0 0; font-size: 18px;">Official Quiz Performance Report</h3>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+      <div>
+        <p style="margin: 3px 0;"><strong>Category:</strong> <span id="pdfCategory">-</span></p>
+        <p style="margin: 3px 0;"><strong>Date:</strong> <span id="pdfDate">-</span></p>
+      </div>
+      <div>
+        <p style="margin: 3px 0;"><strong>Total Questions:</strong> <span id="pdfTotal">10</span></p>
+        <p style="margin: 3px 0; font-size: 16px; color: #0284c7;"><strong>Score:</strong> <span id="pdfScore">0</span></p>
+      </div>
+    </div>
+
+    <h3 style="border-bottom: 1px solid #ccc; padding-bottom: 5px;">Detailed Question Analysis</h3>
+    <div id="pdfQuestionsList"></div>
   </div>
-  <a href="{% url 'game' %}"><button class="back-btn">Back</button></a>
-</div>
-<!-- -----------------------javascript------------------- -->
-<script>
-let questions=[], index=0, score=0;
-let userAnswers=[];
 
-/* SHUFFLE */
-function shuffle(a){
-for(let i=a.length-1;i>0;i--){
-let j=Math.floor(Math.random()*(i+1));
-[a[i],a[j]]=[a[j],a[i]];
-}
-}
+  <!-- ----------------------- JAVASCRIPT LOGIC ------------------ -->
+  <script>
+    let questions = [], index = 0, score = 0;
+    let userAnswers = [];
+    let currentCategory = "General";
 
-/* ALL DATA */
-const quizData={
+    function decodeHTML(html) {
+      let txt = document.createElement("textarea");
+      txt.innerHTML = html;
+      return txt.value;
+    }
 
-python:[
-{q:"Python is a high-level programming language used for?",o:["System programming","Web, AI, Data Science","Hardware design","None"],a:1},
-{q:"Keyword for function?",o:["def","fun","void","function"],a:0},
-{q:"Mutable type?",o:["Tuple","String","List","Integer"],a:2},
-{q:"File extension?",o:[".py",".java",".c",".cpp"],a:0},
-{q:"Loop?",o:["for","repeat","iterate","loop"],a:0},
-{q:"Boolean?",o:["True","Yes","1","On"],a:0},
-{q:"Comment symbol?",o:["#","//","--","/*"],a:0},
-{q:"Print function?",o:["print()","echo","cout","printf"],a:0},
-{q:"List syntax?",o:["[]","{}","()","<>"],a:0},
-{q:"Indentation used for?",o:["Blocks","Style","Comments","None"],a:0}
-],
+    function shuffle(a) {
+      for (let i = a.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+    }
 
-java:[
-{q:"Java supports?",o:["OOP","Procedural","None","Both"],a:0},
-{q:"Entry point?",o:["main()","start","run","init"],a:0},
-{q:"Print?",o:["System.out.println","print","echo","cout"],a:0},
-{q:"Extension?",o:[".java",".py",".c",".cpp"],a:0},
-{q:"Class keyword?",o:["class","define","struct","object"],a:0},
-{q:"Boolean type?",o:["boolean","bool","truefalse","bit"],a:0},
-{q:"Loop?",o:["for","repeat","iterate","loop"],a:0},
-{q:"JVM?",o:["Java Virtual Machine","Java Value","None","Both"],a:0},
-{q:"Package?",o:["Collection of classes","Variable","Loop","None"],a:0},
-{q:"Compiled into?",o:["Bytecode","Machine code","Binary","None"],a:0}
-],
+    async function fetchLiveQuiz(lang, btn) {
+      document.querySelectorAll(".btn-lang").forEach(b => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
 
-c:[
-{q:"C is a?",o:["Compiled","Interpreted","Both","None"],a:0},
-{q:"Entry function?",o:["main()","start","run","init"],a:0},
-{q:"Print function?",o:["printf","cout","print","echo"],a:0},
-{q:"Header file?",o:["stdio.h","java.h","py.h","none"],a:0},
-{q:"Loop?",o:["for","repeat","iterate","loop"],a:0},
-{q:"Pointers supported?",o:["Yes","No","Maybe","None"],a:0},
-{q:"Comment style?",o:["//","/* */","#","--"],a:1},
-{q:"Language type?",o:["Low level","High level","Both","None"],a:2},
-{q:"Array exists?",o:["Yes","No","Maybe","None"],a:0},
-{q:"Compile required?",o:["Yes","No","Maybe","None"],a:0}
-],
+      currentCategory = lang.toUpperCase();
+      document.getElementById("title").innerText = currentCategory + " Quiz";
+      const qBox = document.getElementById("question-box");
+      qBox.style.display = "block";
+      qBox.innerText = "Connecting to OpenTDB API... Loading live questions 🚀";
+      document.getElementById("options").innerHTML = "";
+      document.getElementById("qno").innerText = "";
+      document.getElementById("scoreContainer").style.display = "block";
 
-cpp:[
-{q:"C++ supports OOP?",o:["Yes","No","Maybe","None"],a:0},
-{q:"Output?",o:["cout","printf","print","echo"],a:0},
-{q:"Header file?",o:["iostream","stdio.h","none","java"],a:0},
-{q:"Classes supported?",o:["Yes","No","Maybe","None"],a:0},
-{q:"Loop?",o:["for","repeat","iterate","loop"],a:0},
-{q:"Namespace?",o:["std","main","core","sys"],a:0},
-{q:"C++ derived from?",o:["C","Java","Python","None"],a:0},
-{q:"Constructor?",o:["Yes","No","Maybe","None"],a:0},
-{q:"Compiled language?",o:["Yes","No","Maybe","None"],a:0},
-{q:"Pointers?",o:["Yes","No","Maybe","None"],a:0}
-]
+      try {
+        const response = await fetch("https://opentdb.com/api.php?amount=10&category=18&type=multiple");
+        const data = await response.json();
 
-};
+        if (data.results && data.results.length > 0) {
+          questions = data.results.map(item => {
+            let opts = [...item.incorrect_answers.map(decodeHTML), decodeHTML(item.correct_answer)];
+            shuffle(opts);
+            let correctIdx = opts.indexOf(decodeHTML(item.correct_answer));
 
-/* START */
-function startQuiz(lang){
-document.getElementById("question").innerText = "";
-document.getElementById("options").innerHTML = "";
-questions=[...quizData[lang]];
-shuffle(questions);
+            return {
+              q: decodeHTML(item.question),
+              o: opts,
+              a: correctIdx
+            };
+          });
 
-index=0;
-score=0;
-userAnswers=[];
+          index = 0;
+          score = 0;
+          userAnswers = [];
+          document.getElementById("score").innerText = 0;
 
-document.getElementById("title").innerText=lang.toUpperCase()+" Quiz";
-document.getElementById("score").innerText=0;
+          loadQuestion();
+        } else {
+          qBox.innerText = "Failed to load live API questions. Please retry!";
+        }
+      } catch (err) {
+        qBox.innerText = "Network Error! Check your internet connection.";
+      }
+    }
 
-loadQuestion();
-}
+    function loadQuestion() {
+      let q = questions[index];
 
-/* LOAD */
-function loadQuestion(){
-let q=questions[index];
+      document.getElementById("qno").innerText = "Question " + (index + 1) + " / " + questions.length;
+      document.getElementById("question-box").innerText = q.q;
 
-document.getElementById("qno").innerText=
-"Question "+(index+1)+" / "+questions.length;
+      let optHtml = "";
+      q.o.forEach((o, i) => {
+        optHtml += `<div class="option" onclick="select(this, ${i})">${o}</div>`;
+      });
 
-document.getElementById("question").innerText=q.q;
+      document.getElementById("options").innerHTML = optHtml;
+    }
 
-let opt="";
-q.o.forEach((o,i)=>{
-opt+=`<div class="option" onclick="select(this,${i})">${o}</div>`;
-});
+    function select(el, i) {
+      if (userAnswers[index] !== undefined) return;
+      document.querySelectorAll(".option").forEach(o => o.classList.remove("selected"));
+      el.classList.add("selected");
 
-document.getElementById("options").innerHTML=opt;
-}
+      userAnswers[index] = i;
 
-/* SELECT */
-function select(el,i){
-if(userAnswers[index] !== undefined) return;
-document.querySelectorAll(".option").forEach(o=>o.classList.remove("selected"));
-el.classList.add("selected");
+      if (i === questions[index].a) {
+        score++;
+        document.getElementById("score").innerText = score;
+      }
 
-userAnswers[index]=i;
+      setTimeout(() => {
+        let options = document.querySelectorAll(".option");
+        options.forEach(o => o.style.pointerEvents = "none");
 
-if(i===questions[index].a){
-score++;
-document.getElementById("score").innerText=score;
-}
+        options.forEach((op, idx) => {
+          if (idx === questions[index].a) {
+            op.classList.add("correct");
+          } else if (idx === i) {
+            op.classList.add("wrong");
+          }
+        });
 
-/* SHOW RESULT COLORS */
-setTimeout(()=>{
-let options = document.querySelectorAll(".option");
+        setTimeout(() => {
+          nextQuestion();
+        }, 800);
 
-options.forEach(o => o.style.pointerEvents = "none");
+      }, 300);
+    }
 
-options.forEach((op,idx)=>{
-if(idx===questions[index].a){
-op.classList.add("correct");
-}
-else if(idx===i){
-op.classList.add("wrong");
-}
-});
+    function nextQuestion() {
+      index++;
 
-/* AUTO NEXT */
-setTimeout(()=>{
-nextQuestion();
-},800);
+      if (index < questions.length) {
+        loadQuestion();
+      } else {
+        showResult();
+      }
+    }
 
-},300);
+    /* 🎯 CLEAN RESULT DISPLAY WITH DOWNLOAD PDF BUTTON */
+    function showResult() {
+      document.getElementById("title").innerText = "QUIZ RESULT";
+      document.getElementById("qno").innerText = "";
+      document.getElementById("scoreContainer").style.display = "none";
 
-}
+      let html = `<div style="text-align:center; margin-bottom: 20px;">
+        <h2 style="color:#00ffff; font-family:'Orbitron', sans-serif; font-size: 22px;">🎉 PERFORMANCE SUMMARY</h2>
+        <p style="font-size: 18px; color: #ffffff; margin: 10px 0;">FINAL SCORE: <span style="color:#f1fd47; font-size: 24px; font-weight:bold;">${score} / ${questions.length}</span></p>
+      </div><hr style="border-color: rgba(0, 255, 255, 0.3); margin-bottom: 15px;">`;
 
-/* NEXT */
-function nextQuestion(){
-index++;
+      questions.forEach((q, i) => {
+        let user = userAnswers[i];
+        let isCorrect = user === q.a;
 
-if(index<questions.length){
-loadQuestion();
-}else{
-showResult();
-}
-}
+        html += `<div class="result-item ${isCorrect ? 'correct-item' : 'wrong-item'}">
+          <p style="margin: 0 0 6px 0; color: #ffffff; font-weight: bold; font-size: 13px;">Q${i + 1}: ${q.q}</p>`;
 
-/* RESULT */
-function showResult(){
-let html=`<h2>🎉 Result</h2>
-<p><b>${score} / ${questions.length}</b></p><hr>`;
+        if (isCorrect) {
+          html += `<p style="color: #00ff94; margin: 0; font-size: 12px;">✅ Your Answer: ${q.o[q.a]}</p>`;
+        } else {
+          html += `<p style="color: #ff3b3b; margin: 0 0 2px 0; font-size: 12px;">❌ Your Answer: ${q.o[user] !== undefined ? q.o[user] : "Not Answered"}</p>
+          <p style="color: #00ff94; margin: 0; font-size: 12px;">✅ Correct Answer: ${q.o[q.a]}</p>`;
+        }
 
-questions.forEach((q,i)=>{
+        html += `</div>`;
+      });
 
-let user=userAnswers[i];
+      /* 📄 Download PDF Button Included */
+      html += `<button class="btn-lang btn-pdf" onclick="generatePDF()"><i class="fas fa-file-pdf"></i> DOWNLOAD RESULT PDF</button>`;
+      html += `<button class="btn-lang" onclick="location.reload()" style="margin-top: 10px;">RETRY NEW QUIZ</button>`;
 
-if(user===q.a){
-html+=`<p>Q${i+1}: ${q.q}</p>
-<p style="color:lightgreen;">✅ Correct</p><hr>`;
-}
+      const qBox = document.getElementById("question-box");
+      qBox.innerHTML = html;
+      document.getElementById("options").innerHTML = "";
+    }
 
-else{
-html+=`<p>Q${i+1}: ${q.q}</p>
-<p style="color:red;">❌ Your: ${q.o[user] || "Not Answered"}</p>
-<p style="color:lightgreen;">✅ Correct: ${q.o[q.a]}</p><hr>`;
-}
-});
-html += `<button class="btn" onclick="location.reload()">Restart Quiz</button>`;
+    /* 📄 GENERATE & DOWNLOAD PDF FUNCTION */
+    function generatePDF() {
+      // 1. Fill Hidden Template Data
+      document.getElementById("pdfCategory").innerText = currentCategory;
+      document.getElementById("pdfDate").innerText = new Date().toLocaleDateString();
+      document.getElementById("pdfTotal").innerText = questions.length;
+      document.getElementById("pdfScore").innerText = score + " / " + questions.length;
 
-document.getElementById("question").innerHTML=html;
-document.getElementById("options").innerHTML="";
-document.getElementById("qno").innerText="";
-}
+      let listHtml = "";
+      questions.forEach((q, i) => {
+        let user = userAnswers[i];
+        let isCorrect = user === q.a;
 
-</script>
+        listHtml += `<div style="margin-bottom: 12px; padding: 10px; border-bottom: 1px solid #e2e8f0;">
+          <p style="margin: 0 0 4px 0; font-weight: bold; font-size: 14px; color: #1e293b;">Q${i + 1}: ${q.q}</p>`;
 
+        if (isCorrect) {
+          listHtml += `<p style="color: #16a34a; margin: 0; font-size: 13px;">✅ Correct Answer: ${q.o[q.a]}</p>`;
+        } else {
+          listHtml += `<p style="color: #dc2626; margin: 0 0 2px 0; font-size: 13px;">❌ Your Answer: ${q.o[user] !== undefined ? q.o[user] : "Not Answered"}</p>
+          <p style="color: #16a34a; margin: 0; font-size: 13px;">✅ Right Answer: ${q.o[q.a]}</p>`;
+        }
+
+        listHtml += `</div>`;
+      });
+
+      document.getElementById("pdfQuestionsList").innerHTML = listHtml;
+
+      // 2. Generate PDF via html2pdf
+      const element = document.getElementById("pdfReportTemplate");
+      element.style.display = "block";
+
+      const opt = {
+        margin:       0.5,
+        filename:     `Quiz_Result_${currentCategory}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save().then(() => {
+        element.style.display = "none";
+      });
+    }
+  </script>
 </body>
+
 </html>
