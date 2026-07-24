@@ -1,69 +1,79 @@
-from django.db import models
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
-from django.http import JsonResponse
-from .models import Profile, GameComment
-from django.contrib.auth.decorators import login_required
-import random
-import time
 import json
-from django.utils import timezone
-from django.core.mail import send_mail
-from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
+import random
 import threading
+import time
+
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.db import models
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+
+from .models import GameComment, Profile
+
 
 # ---------------------------------------------------------
 # 🚀 FAST ASYNC EMAIL THREADING SETUP
 # ---------------------------------------------------------
 class EmailThread(threading.Thread):
-    def __init__(self, subject, message, recipient_list):
-        self.subject = subject
-        self.message = message
-        self.recipient_list = recipient_list
-        threading.Thread.__init__(self)
 
-    def run(self):
-        send_mail(
-            self.subject,
-            self.message,
-            settings.DEFAULT_FROM_EMAIL,
-            self.recipient_list,
-            fail_silently=True
-        )
+  def __init__(self, subject, message, recipient_list):
+    self.subject = subject
+    self.message = message
+    self.recipient_list = recipient_list
+    threading.Thread.__init__(self)
+
+  def run(self):
+    send_mail(
+        self.subject,
+        self.message,
+        settings.DEFAULT_FROM_EMAIL,
+        self.recipient_list,
+        fail_silently=True,
+    )
+
 
 def send_otp_fast(subject, message, recipient_email):
-    EmailThread(subject, message, [recipient_email]).start()
+  EmailThread(subject, message, [recipient_email]).start()
 
 
 # ---------------------------------------------------------
 # 🔑 REGISTRATION & REGISTER OTP VIEWS
 # ---------------------------------------------------------
 def send_register_otp(request):
-    if request.method != "POST":
-        return JsonResponse({"status": "error", "message": "Invalid Request"})
+  if request.method != 'POST':
+    return JsonResponse({'status': 'error', 'message': 'Invalid Request'})
 
-    email = request.POST.get("email", "").strip()
-    if not email:
-        return JsonResponse({"status": "error", "message": "Email address is required."})
+  email = request.POST.get('email', '').strip()
+  if not email:
+    return JsonResponse(
+        {'status': 'error', 'message': 'Email address is required.'}
+    )
 
-    # Check if email is already registered
-    if User.objects.filter(email=email).exists():
-        return JsonResponse({"status": "error", "message": "This email is already registered! 🛑"})
+  # Check if email is already registered
+  if User.objects.filter(email=email).exists():
+    return JsonResponse({
+        'status': 'error',
+        'message': 'This email is already registered! 🛑',
+    })
 
-    # Generate 6-digit dynamic OTP
-    otp = str(random.randint(100000, 999999))
+  # Generate 6-digit dynamic OTP
+  otp = str(random.randint(100000, 999999))
 
-    # Session storage setup
-    request.session["reg_email"] = email
-    request.session["reg_otp"] = otp
-    request.session["reg_otp_time"] = time.time()
-    request.session.modified = True
+  # Session storage setup
+  request.session['reg_email'] = email
+  request.session['reg_otp'] = otp
+  request.session['reg_otp_time'] = time.time()
+  request.session.modified = True
 
-    subject = "LearnCodePlay Signup Verification OTP"
-    message = f"""Hello Gamer,
+  subject = 'LearnCodePlay Signup Verification OTP'
+  message = f"""Hello Gamer,
 
 Welcome to LearnCodePlay! Your registration verification code is: {otp}
 
@@ -72,85 +82,117 @@ This key is valid for 5 minutes.
 Thanks,
 LearnCodePlay Team"""
 
-    # ⚡ FAST BACKGROUND EMAIL SENDING
-    send_otp_fast(subject, message, email)
+  # ⚡ FAST BACKGROUND EMAIL SENDING
+  send_otp_fast(subject, message, email)
 
-    return JsonResponse({"status": "success", "message": "OTP sent successfully."})
+  return JsonResponse(
+      {'status': 'success', 'message': 'OTP sent successfully.'}
+  )
 
 
 def register_view(request):
-    if request.method == "POST":
-        username = request.POST.get("username", "").strip()
-        email = request.POST.get("email", "").strip()
-        password = request.POST.get("password", "")
-        user_otp = request.POST.get("otp", "").strip()
+  if request.method == 'POST':
+    username = request.POST.get('username', '').strip()
+    email = request.POST.get('email', '').strip()
+    password = request.POST.get('password', '')
+    user_otp = request.POST.get('otp', '').strip()
 
-        session_otp = request.session.get("reg_otp")
-        session_email = request.session.get("reg_email")
-        otp_time = request.session.get("reg_otp_time")
+    session_otp = request.session.get('reg_otp')
+    session_email = request.session.get('reg_email')
+    otp_time = request.session.get('reg_otp_time')
 
-        if not username or not email or not password or not user_otp:
-            return JsonResponse({"status": "error", "message": "All database parameters are required! ❌"})
+    if not username or not email or not password or not user_otp:
+      return JsonResponse({
+          'status': 'error',
+          'message': 'All database parameters are required! ❌',
+      })
 
-        if User.objects.filter(username=username).exists():
-            return JsonResponse({"status": "error", "message": "Username already taken! 🛑"})
+    if User.objects.filter(username=username).exists():
+      return JsonResponse(
+          {'status': 'error', 'message': 'Username already taken! 🛑'}
+      )
 
-        # OTP Expiry tracking (5 minutes = 300s)
-        if not session_otp or time.time() - otp_time > 300:
-            return JsonResponse({"status": "error", "message": "Verification key has expired. Please resend."})
+    # OTP Expiry tracking (5 minutes = 300s)
+    if not session_otp or time.time() - otp_time > 300:
+      return JsonResponse({
+          'status': 'error',
+          'message': 'Verification key has expired. Please resend.',
+      })
 
-        if user_otp != session_otp or email != session_email:
-            return JsonResponse({"status": "error", "message": "Invalid verification code sequence! ❌"})
+    if user_otp != session_otp or email != session_email:
+      return JsonResponse(
+          {'status': 'error', 'message': 'Invalid verification code sequence! ❌'}
+      )
 
-        try:
-            user = User.objects.create_user(username=username, email=email, password=password)
-            user.save()
+    try:
+      user = User.objects.create_user(
+          username=username, email=email, password=password
+      )
+      user.save()
 
-            Profile.objects.get_or_create(user=user)
-            login(request, user)
+      Profile.objects.get_or_create(user=user)
+      login(request, user)
 
-            # Cleanup session variables
-            request.session.pop("reg_email", None)
-            request.session.pop("reg_otp", None)
-            request.session.pop("reg_otp_time", None)
+      # Cleanup session variables
+      request.session.pop('reg_email', None)
+      request.session.pop('reg_otp', None)
+      request.session.pop('reg_otp_time', None)
 
-            return JsonResponse({"status": "success", "message": "Registration successful!"})
-        except Exception as e:
-            return JsonResponse({"status": "error", "message": f"Server Error during instantiation: {str(e)}"})
+      return JsonResponse(
+          {'status': 'success', 'message': 'Registration successful!'}
+      )
+    except Exception as e:
+      return JsonResponse({
+          'status': 'error',
+          'message': f'Server Error during instantiation: {str(e)}',
+      })
 
-    return render(request, 'home/home.html')
+  return render(request, 'home/home.html')
 
 
 # ---------------------------------------------------------
 # 🔓 LOGIN & LOGOUT VIEWS
 # ---------------------------------------------------------
 def login_view(request):
-    if request.method == 'POST':
-        identifier = request.POST.get('username', '').strip()
-        password = request.POST.get('password', '')
+  if request.method == 'POST':
+    identifier = request.POST.get('username', '').strip()
+    password = request.POST.get('password', '')
 
-        if not identifier or not password:
-            return JsonResponse({'status': 'error', 'message': 'All fields are required!'}, status=400)
+    if not identifier or not password:
+      return JsonResponse(
+          {'status': 'error', 'message': 'All fields are required!'}
+      )
 
-        # Search by Username OR Email (Case Insensitive)
-        user_obj = User.objects.filter(
-            models.Q(username__iexact=identifier) | models.Q(email__iexact=identifier)
-        ).first()
+    # Search by Username OR Email (Case Insensitive)
+    user_obj = User.objects.filter(
+        models.Q(username__iexact=identifier)
+        | models.Q(email__iexact=identifier)
+    ).first()
 
-        if user_obj:
-            user = authenticate(request, username=user_obj.username, password=password)
-            if user is not None:
-                login(request, user)
-                return JsonResponse({'status': 'success', 'message': f'WELCOME BACK, {user.username}! 🎮'})
+    if user_obj:
+      user = authenticate(
+          request, username=user_obj.username, password=password
+      )
+      if user is not None:
+        login(request, user)
+        # Frontend par is success status se modal close karwayen
+        return JsonResponse({
+            'status': 'success',
+            'message': f'WELCOME BACK, {user.username}! 🎮',
+        })
 
-        return JsonResponse({'status': 'error', 'message': 'Invalid Username/Email or Password ❌'}, status=400)
+    # Error status: Isase modal khula rahega aur message display ho jayega
+    return JsonResponse(
+        {'status': 'error', 'message': 'Invalid Username/Email or Password ❌'}
+    )
 
-    return JsonResponse({'status': 'error', 'message': 'Invalid Request'}, status=400)
+  # GET Request par page/home render hoga direct URL access ke waqt
+  return render(request, 'home/home.html')
 
 
 def logout_view(request):
-    logout(request)
-    return redirect('home')
+  logout(request)
+  return redirect('home')
 
 
 # ---------------------------------------------------------
@@ -158,76 +200,91 @@ def logout_view(request):
 # ---------------------------------------------------------
 @login_required
 def save_profile(request):
-    if request.method == 'POST':
-        user = request.user
-        profile, created = Profile.objects.get_or_create(user=user)
+  if request.method == 'POST':
+    user = request.user
+    profile, created = Profile.objects.get_or_create(user=user)
 
-        username = request.POST.get('name')
-        email = request.POST.get('email')
-        if username:
-            user.username = username
-        if email:
-            user.email = email
-        user.save()
+    username = request.POST.get('name', '').strip()
+    email = request.POST.get('email', '').strip()
 
-        profile.mobile = request.POST.get('mobile')
-        profile.gender = request.POST.get('gender')
+    # Unique Username Check
+    if username and username != user.username:
+      if User.objects.filter(username=username).exclude(id=user.id).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'Username already taken! 🛑'}
+        )
+      user.username = username
 
-        dob_val = request.POST.get('dob')
-        if dob_val:
-            profile.dob = dob_val
+    # Unique Email Check
+    if email and email != user.email:
+      if User.objects.filter(email=email).exclude(id=user.id).exists():
+        return JsonResponse(
+            {'status': 'error', 'message': 'Email already registered! 🛑'}
+        )
+      user.email = email
 
-        profile.profession = request.POST.get('profession')
+    user.save()
 
-        if 'image' in request.FILES:
-            profile.image = request.FILES['image']
+    profile.mobile = request.POST.get('mobile')
+    profile.gender = request.POST.get('gender')
 
-        profile.save()
+    dob_val = request.POST.get('dob')
+    if dob_val:
+      profile.dob = dob_val
 
-        return JsonResponse({'status': 'success', 'message': 'Profile updated successfully!'})
+    profile.profession = request.POST.get('profession')
 
-    return JsonResponse({'status': 'error', 'message': 'Invalid Request'}, status=400)
+    if 'image' in request.FILES:
+      profile.image = request.FILES['image']
+
+    profile.save()
+
+    return JsonResponse(
+        {'status': 'success', 'message': 'Profile updated successfully!'}
+    )
+
+  return render(request, 'home/home.html')
 
 
 @login_required
 def get_profile(request):
-    user = request.user
-    profile, created = Profile.objects.get_or_create(user=user)
+  user = request.user
+  profile, created = Profile.objects.get_or_create(user=user)
 
-    image_url = profile.image.url if profile.image else ''
+  image_url = profile.image.url if profile.image else ''
 
-    return JsonResponse({
-        'status': 'success',
-        'name': user.username,
-        'email': user.email,
-        'mobile': profile.mobile or '',
-        'gender': profile.gender or '',
-        'dob': str(profile.dob) if profile.dob else '',
-        'profession': profile.profession or 'Gamer',
-        'image_url': image_url
-    })
+  return JsonResponse({
+      'status': 'success',
+      'name': user.username,
+      'email': user.email,
+      'mobile': profile.mobile or '',
+      'gender': profile.gender or '',
+      'dob': str(profile.dob) if profile.dob else '',
+      'profession': profile.profession or 'Gamer',
+      'image_url': image_url,
+  })
 
 
 # ---------------------------------------------------------
 # 🔑 FORGOT & RESET PASSWORD VIEWS
 # ---------------------------------------------------------
 def forgot_password(request):
-    if request.method != "POST":
-        return JsonResponse({"status": "error", "message": "Invalid Request"})
-    
-    email = request.POST.get("email", "").strip()
-    try:
-        user = User.objects.get(email=email)
-    except User.DoesNotExist:
-        return JsonResponse({"status": "error", "message": "Email not registered."})
+  if request.method != 'POST':
+    return JsonResponse({'status': 'error', 'message': 'Invalid Request'})
 
-    otp = str(random.randint(100000, 999999))
-    request.session["reset_email"] = email
-    request.session["reset_otp"] = otp
-    request.session["otp_time"] = time.time()
+  email = request.POST.get('email', '').strip()
+  try:
+    user = User.objects.get(email=email)
+  except User.DoesNotExist:
+    return JsonResponse({'status': 'error', 'message': 'Email not registered.'})
 
-    subject = "LearnCodePlay Password Reset OTP"
-    message = f"""Hello {user.username},
+  otp = str(random.randint(100000, 999999))
+  request.session['reset_email'] = email
+  request.session['reset_otp'] = otp
+  request.session['otp_time'] = time.time()
+
+  subject = 'LearnCodePlay Password Reset OTP'
+  message = f"""Hello {user.username},
 
 Your Password Reset OTP is: {otp}
 
@@ -236,123 +293,127 @@ This OTP is valid for 5 minutes.
 Thanks,
 LearnCodePlay Team"""
 
-    # ⚡ FAST BACKGROUND EMAIL SENDING
-    send_otp_fast(subject, message, email)
+  # ⚡ FAST BACKGROUND EMAIL SENDING
+  send_otp_fast(subject, message, email)
 
-    return JsonResponse({"status": "success", "message": "OTP sent successfully."})
+  return JsonResponse(
+      {'status': 'success', 'message': 'OTP sent successfully.'}
+  )
 
 
 def verify_otp(request):
-    if request.method != "POST":
-        return JsonResponse({"status": "error", "message": "Invalid Request"})
+  if request.method != 'POST':
+    return JsonResponse({'status': 'error', 'message': 'Invalid Request'})
 
-    otp = request.POST.get("otp", "").strip()
-    session_otp = request.session.get("reset_otp")
-    otp_time = request.session.get("otp_time")
+  otp = request.POST.get('otp', '').strip()
+  session_otp = request.session.get('reset_otp')
+  otp_time = request.session.get('otp_time')
 
-    if not session_otp or not otp_time:
-        return JsonResponse({"status": "error", "message": "OTP Expired"})
+  if not session_otp or not otp_time:
+    return JsonResponse({'status': 'error', 'message': 'OTP Expired'})
 
-    if time.time() - otp_time > 300:
-        request.session.pop("reset_otp", None)
-        return JsonResponse({"status": "error", "message": "OTP Expired"})
+  if time.time() - otp_time > 300:
+    request.session.pop('reset_otp', None)
+    return JsonResponse({'status': 'error', 'message': 'OTP Expired'})
 
-    if otp != session_otp:
-        return JsonResponse({"status": "error", "message": "Invalid OTP"})
+  if otp != session_otp:
+    return JsonResponse({'status': 'error', 'message': 'Invalid OTP'})
 
-    request.session["otp_verified"] = True
-    return JsonResponse({"status": "success", "message": "OTP Verified"})
+  request.session['otp_verified'] = True
+  return JsonResponse({'status': 'success', 'message': 'OTP Verified'})
 
 
 def reset_password(request):
-    if request.method != "POST":
-        return JsonResponse({"status": "error", "message": "Invalid Request"})
+  if request.method != 'POST':
+    return JsonResponse({'status': 'error', 'message': 'Invalid Request'})
 
-    if not request.session.get("otp_verified"):
-        return JsonResponse({"status": "error", "message": "Please verify OTP first"})
+  if not request.session.get('otp_verified'):
+    return JsonResponse(
+        {'status': 'error', 'message': 'Please verify OTP first'}
+    )
 
-    password = request.POST.get("password")
-    email = request.session.get("reset_email")
+  password = request.POST.get('password')
+  email = request.session.get('reset_email')
 
-    if not email:
-        return JsonResponse({"status": "error", "message": "Session Expired"})
+  if not email:
+    return JsonResponse({'status': 'error', 'message': 'Session Expired'})
 
-    try:
-        user = User.objects.get(email=email)
-    except User.DoesNotExist:
-        return JsonResponse({"status": "error", "message": "User not found"})
+  try:
+    user = User.objects.get(email=email)
+  except User.DoesNotExist:
+    return JsonResponse({'status': 'error', 'message': 'User not found'})
 
-    user.set_password(password)
-    user.save()
+  user.set_password(password)
+  user.save()
 
-    # Session Cleanup
-    request.session.pop("reset_email", None)
-    request.session.pop("reset_otp", None)
-    request.session.pop("otp_time", None)
-    request.session.pop("otp_verified", None)
+  # Session Cleanup
+  request.session.pop('reset_email', None)
+  request.session.pop('reset_otp', None)
+  request.session.pop('otp_time', None)
+  request.session.pop('otp_verified', None)
 
-    return JsonResponse({"status": "success", "message": "Password Updated Successfully"})
+  return JsonResponse(
+      {'status': 'success', 'message': 'Password Updated Successfully'}
+  )
 
 
 # ---------------------------------------------------------
 # 💬 GAME COMMENTS MANAGEMENT VIEWS
 # ---------------------------------------------------------
 def get_comments(request, game_id):
-    try:
-        comments = GameComment.objects.filter(game_id=game_id).order_by('-created_at')
-        data = []
-        for c in comments:
-            local_time = timezone.localtime(c.created_at)
-            
-            data.append({
-                'id': c.id,
-                'user': c.user.username if c.user else 'Guest Gamer',
-                'text': c.comment_text,
-                'time': local_time.strftime('%b %d, %H:%M')
-            })
-        return JsonResponse({'status': 'success', 'comments': data})
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+  try:
+    comments = GameComment.objects.filter(game_id=game_id).order_by(
+        '-created_at'
+    )
+    data = []
+    for c in comments:
+      local_time = timezone.localtime(c.created_at)
+
+      data.append({
+          'id': c.id,
+          'user': c.user.username if c.user else 'Guest Gamer',
+          'text': c.comment_text,
+          'time': local_time.strftime('%b %d, %H:%M'),
+      })
+    return JsonResponse({'status': 'success', 'comments': data})
+  except Exception as e:
+    return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 
 @csrf_exempt
 def add_comment(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            game_id = data.get("game_id")
-            text = data.get("comment_text")
+  if request.method == 'POST':
+    try:
+      data = json.loads(request.body)
+      game_id = data.get('game_id')
+      text = data.get('comment_text')
 
-            user_obj = request.user if request.user.is_authenticated else None
+      user_obj = request.user if request.user.is_authenticated else None
 
-            comment = GameComment.objects.create(
-                game_id=game_id,
-                user=user_obj,
-                comment_text=text
-            )
+      comment = GameComment.objects.create(
+          game_id=game_id, user=user_obj, comment_text=text
+      )
 
-            return JsonResponse({
-                "status": "success",
-                "id": comment.id
-            })
+      return JsonResponse({'status': 'success', 'id': comment.id})
 
-        except Exception as e:
-            return JsonResponse({
-                "status": "error",
-                "message": str(e)
-            }, status=500)
+    except Exception as e:
+      return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
-    return JsonResponse({"status": "error"}, status=400)
+  return JsonResponse({'status': 'error'}, status=400)
 
 
 @login_required
 def delete_comment(request, comment_id):
-    """Admin ya author comment delete kar sakta hai"""
-    comment = get_object_or_404(GameComment, id=comment_id)
-    
-    # Faizal / Admin ya Comment creator hi delete kar sakega
-    if request.user.is_superuser or request.user == comment.user:
-        comment.delete()
-        return JsonResponse({'status': 'success', 'message': 'Comment deleted successfully'})
-        
-    return JsonResponse({'status': 'error', 'message': 'Unauthorized action!'}, status=403)
+  """Admin ya author comment delete kar sakta hai"""
+  comment = get_object_or_404(GameComment, id=comment_id)
+
+  # Admin ya Comment creator hi delete kar sakega
+  if request.user.is_superuser or request.user == comment.user:
+    comment.delete()
+    return JsonResponse(
+        {'status': 'success', 'message': 'Comment deleted successfully'}
+    )
+
+  return JsonResponse(
+      {'status': 'error', 'message': 'Unauthorized action!'}, status=403
+  )
