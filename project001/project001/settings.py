@@ -139,7 +139,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 EMAIL_HOST_USER = "swatigarewal01@gmail.com"
-EMAIL_HOST_PASSWORD = "utnw osed tlrp nemm"
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # settings.py ke bottom me add/update karein:
 DEFAULT_FROM_EMAIL = f"LearnCodePlay <{EMAIL_HOST_USER}>"
