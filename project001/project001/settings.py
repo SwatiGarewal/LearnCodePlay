@@ -146,4 +146,4 @@ DEFAULT_FROM_EMAIL = f"LearnCodePlay <{EMAIL_HOST_USER}>"
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
