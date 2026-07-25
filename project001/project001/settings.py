@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
     'http://localhost:8000',
+    "https://learncodeplay.onrender.com",
 ]
 
 # Application definition
@@ -151,7 +152,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 print("EMAIL_HOST_USER:", EMAIL_HOST_USER)
 print("EMAIL_HOST_PASSWORD FOUND:", bool(EMAIL_HOST_PASSWORD))
 EMAIL_FAIL_SILENTLY = False
-EMAIL_TIMEOUT = 20
+EMAIL_TIMEOUT = 10
 
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'

@@ -55,10 +55,9 @@ def run(self):
 
 def send_otp_fast(subject, message, recipient_email):
     try:
-        print("=" * 60)
-        print("Sending OTP directly...")
+        print("START SENDING")
 
-        send_mail(
+        sent = send_mail(
             subject,
             message,
             settings.DEFAULT_FROM_EMAIL,
@@ -66,10 +65,11 @@ def send_otp_fast(subject, message, recipient_email):
             fail_silently=False,
         )
 
-        print("OTP Sent Successfully")
+        print("RESULT =", sent)
 
     except Exception as e:
-        print("EMAIL ERROR:", str(e))
+        print(type(e).__name__)
+        print(repr(e))
         raise
 
 
