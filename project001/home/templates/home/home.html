@@ -1077,13 +1077,17 @@
               commentDiv.className = 'single-comment';
               commentDiv.style.cssText = "display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;";
               
+              const deleteIconHtml = c.can_delete
+                  ? `<i class="fas fa-trash-alt" onclick="deleteComment(${c.id}, this, '${gameId}')" 
+                  style="color: #ff3b3b; cursor: pointer; font-size: 11px; margin-left: 8px; margin-top: 3px;" title="Delete Comment"></i>`
+                  : '';
+
               commentDiv.innerHTML = `
-                <div>
+                  <div>
                   <span class="comment-user" style="color:#f1fd47; font-weight:bold; display:block; font-size:11px;">@${c.user} • ${c.time}</span>
                   <span style="font-size: 12px; color: #ffffff;">${c.text}</span>
-                </div>
-                <i class="fas fa-trash-alt" onclick="deleteComment(${c.id}, this, '${gameId}')" 
-                   style="color: #ff3b3b; cursor: pointer; font-size: 11px; margin-left: 8px; margin-top: 3px;" title="Delete Comment"></i>
+                  </div>
+                  ${deleteIconHtml}
               `;
               commentsList.appendChild(commentDiv);
             });

@@ -420,6 +420,8 @@ def get_comments(request, game_id):
     comments = GameComment.objects.filter(game_id=game_id).order_by(
         '-created_at'
     )
+    is_superuser = request.user.is_authenticated and request.user.is_superuser
+
     data = []
     for c in comments:
       local_time = timezone.localtime(c.created_at)
@@ -429,6 +431,7 @@ def get_comments(request, game_id):
           'user': c.user.username if c.user else 'Guest Gamer',
           'text': c.comment_text,
           'time': local_time.strftime('%b %d, %H:%M'),
+          'can_delete': is_superuser,
       })
     return JsonResponse({'status': 'success', 'comments': data})
   except Exception as e:
@@ -459,11 +462,10 @@ def add_comment(request):
 
 @login_required
 def delete_comment(request, comment_id):
-  """Admin ya author comment delete kar sakta hai"""
+  """Sirf superuser hi comment delete kar sakta hai"""
   comment = get_object_or_404(GameComment, id=comment_id)
 
-  # Admin ya Comment creator hi delete kar sakega
-  if request.user.is_superuser or request.user == comment.user:
+  if request.user.is_superuser:
     comment.delete()
     return JsonResponse(
         {'status': 'success', 'message': 'Comment deleted successfully'}
