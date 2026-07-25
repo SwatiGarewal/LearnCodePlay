@@ -52,22 +52,29 @@ class EmailThread(threading.Thread):
         raise
 
 
+from django.core.mail import send_mail
+import traceback
+
 def send_otp_fast(subject, message, recipient_email):
     try:
-        print("START SENDING")
+        print("HOST =", settings.EMAIL_HOST)
+        print("PORT =", settings.EMAIL_PORT)
+        print("USER =", settings.EMAIL_HOST_USER)
+        print("FROM =", settings.DEFAULT_FROM_EMAIL)
+        print("PASSWORD =", bool(settings.EMAIL_HOST_PASSWORD))
 
-        email = EmailMessage(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                [recipient_email],)
+        sent = send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [recipient_email],
+            fail_silently=False,
+        )
 
-
-        email.send(fail_silently=False)
+        print("MAIL SENT =", sent)
 
     except Exception as e:
-        print(type(e).__name__)
-        print(repr(e))
+        print(traceback.format_exc())
         raise
 
 

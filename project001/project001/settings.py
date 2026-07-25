@@ -151,9 +151,11 @@ EMAIL_SSL_KEYFILE = None
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
-DEFAULT_FROM_EMAIL = f"LearnCodePlay <{EMAIL_HOST_USER}>"
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL",
+    "LearnCodePlay <swatigarewal01@gmail.com>")
 
-EMAIL_TIMEOUT = 30
+EMAIL_TIMEOUT = 120
 
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
