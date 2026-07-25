@@ -14,7 +14,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
-
+from django.core.mail import EmailMessage
 from .models import GameComment, Profile
 
 
@@ -29,14 +29,13 @@ class EmailThread(threading.Thread):
     self.recipient_list = recipient_list
     threading.Thread.__init__(self)
 
-def run(self):
+  def run(self):
     try:
-        print("=" * 60)
-        print("Sending OTP Email...")
-        print("FROM:", settings.DEFAULT_FROM_EMAIL)
-        print("TO:", self.recipient_list)
-        print("EMAIL USER:", settings.EMAIL_HOST_USER)
-        print("PASSWORD FOUND:", bool(settings.EMAIL_HOST_PASSWORD))
+        print("HOST =", settings.EMAIL_HOST)
+        print("PORT =", settings.EMAIL_PORT)
+        print("USER =", settings.EMAIL_HOST_USER)
+        print("FROM =", settings.DEFAULT_FROM_EMAIL)
+        print("TLS =", settings.EMAIL_USE_TLS)
 
         send_mail(
             self.subject,
@@ -57,15 +56,14 @@ def send_otp_fast(subject, message, recipient_email):
     try:
         print("START SENDING")
 
-        sent = send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [recipient_email],
-            fail_silently=False,
-        )
+        email = EmailMessage(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                [recipient_email],)
 
-        print("RESULT =", sent)
+
+        email.send(fail_silently=False)
 
     except Exception as e:
         print(type(e).__name__)
