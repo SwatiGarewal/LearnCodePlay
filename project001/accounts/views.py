@@ -271,8 +271,17 @@ def save_profile(request):
 
     user.save()
 
-    profile.mobile = request.POST.get('mobile')
-    profile.gender = request.POST.get('gender')
+    mobile_val = request.POST.get('mobile')
+    if mobile_val:
+       profile.mobile = mobile_val
+
+    gender_val = request.POST.get('gender')
+    if gender_val:
+       profile.gender = gender_val
+
+    profession_val = request.POST.get('profession')
+    if profession_val:
+       profile.profession = profession_val
 
     dob_val = request.POST.get('dob')
     if dob_val:
