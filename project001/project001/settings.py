@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#^o=7kyj68p0n=+p%sz0_1o=m9&#wfiej3cf*@2e&i8u_tq5f#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -143,11 +143,14 @@ EMAIL_PORT = 465
 EMAIL_USE_SSL = True
 EMAIL_USE_TLS = False
 
-EMAIL_HOST_USER = "swatigarewal01@gmail.com"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+print("EMAIL_HOST_USER:", EMAIL_HOST_USER)
+print("EMAIL_HOST_PASSWORD FOUND:", bool(EMAIL_HOST_PASSWORD))
 EMAIL_FAIL_SILENTLY = False
 # settings.py ke bottom me add/update karein:
 DEFAULT_FROM_EMAIL = f"LearnCodePlay <{EMAIL_HOST_USER}>"
+
 
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -159,3 +162,4 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
+

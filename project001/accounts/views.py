@@ -29,18 +29,48 @@ class EmailThread(threading.Thread):
     self.recipient_list = recipient_list
     threading.Thread.__init__(self)
 
-  def run(self):
-    send_mail(
-        self.subject,
-        self.message,
-        settings.DEFAULT_FROM_EMAIL,
-        self.recipient_list,
-        fail_silently=True,
-    )
+def run(self):
+    try:
+        print("=" * 60)
+        print("Sending OTP Email...")
+        print("FROM:", settings.DEFAULT_FROM_EMAIL)
+        print("TO:", self.recipient_list)
+        print("EMAIL USER:", settings.EMAIL_HOST_USER)
+        print("PASSWORD FOUND:", bool(settings.EMAIL_HOST_PASSWORD))
+
+        send_mail(
+            self.subject,
+            self.message,
+            settings.DEFAULT_FROM_EMAIL,
+            self.recipient_list,
+            fail_silently=False,
+        )
+
+        print("OTP Email Sent Successfully")
+
+    except Exception as e:
+        print("EMAIL ERROR:", str(e))
+        raise
 
 
 def send_otp_fast(subject, message, recipient_email):
-  EmailThread(subject, message, [recipient_email]).start()
+    try:
+        print("=" * 60)
+        print("Sending OTP directly...")
+
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [recipient_email],
+            fail_silently=False,
+        )
+
+        print("OTP Sent Successfully")
+
+    except Exception as e:
+        print("EMAIL ERROR:", str(e))
+        raise
 
 
 # ---------------------------------------------------------
