@@ -2,7 +2,7 @@ import json
 import random
 import threading
 import time
-
+import requests
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -57,26 +57,37 @@ import traceback
 
 def send_otp_fast(subject, message, recipient_email):
     try:
-        print("HOST =", settings.EMAIL_HOST)
-        print("PORT =", settings.EMAIL_PORT)
-        print("USER =", settings.EMAIL_HOST_USER)
-        print("FROM =", settings.DEFAULT_FROM_EMAIL)
-        print("PASSWORD =", bool(settings.EMAIL_HOST_PASSWORD))
+        url = "https://api.brevo.com/v3/smtp/email"
 
-        sent = send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [recipient_email],
-            fail_silently=False,
-        )
+        payload = {
+            "sender": {
+                "name": "LearnCodePlay",
+                "email": "swatigarewal01@gmail.com"  # Brevo mein verified sender hona chahiye
+            },
+            "to": [
+                {"email": recipient_email}
+            ],
+            "subject": subject,
+            "textContent": message,
+        }
 
-        print("MAIL SENT =", sent)
+        headers = {
+            "accept": "application/json",
+            "api-key": settings.BREVO_API_KEY,
+            "content-type": "application/json",
+        }
+
+        response = requests.post(url, json=payload, headers=headers, timeout=15)
+
+        print("BREVO STATUS =", response.status_code)
+        print("BREVO RESPONSE =", response.text)
+
+        if response.status_code not in (200, 201):
+            raise Exception(f"Brevo API failed: {response.status_code} - {response.text}")
 
     except Exception as e:
-        print(traceback.format_exc())
+        print("EMAIL ERROR:", str(e))
         raise
-
 
 # ---------------------------------------------------------
 # 🔑 REGISTRATION & REGISTER OTP VIEWS
