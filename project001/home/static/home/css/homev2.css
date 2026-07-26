@@ -952,15 +952,15 @@ footer {
 
   .login-btn {
 
-    font-size: 5px !important;
+    font-size: 10px !important;
     padding: 5px 10px !important;
     white-space: nowrap !important;
   }
 
   .content {
-    margin-top: 0%;
+
     min-height: auto !important;
-    padding: 5px 20px 30px !important;
+    padding: 90px 20px 30px !important;
     justify-content: flex-start !important;
 
   }
@@ -1067,7 +1067,7 @@ footer {
   }
 
   .login-btn {
-    font-size: 1px !important;
+    font-size: 9px !important;
     padding: 4px 8px !important;
   }
 
