@@ -16,6 +16,7 @@ body {
   min-height: 100vh;
   font-family: "Share Tech Mono", monospace;
   background: #000;
+  overflow-x: hidden;
 }
 
 /*----------- Background Area --------------------------------- */
@@ -28,6 +29,7 @@ body {
   animation: bgChange 15s infinite linear;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 }
 
 /*----------- Background Animation of images ------------------------ */
