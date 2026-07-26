@@ -1052,3 +1052,26 @@ footer {
     flex: 0 0 250px !important;
   }
 }
+
+@media (max-width: 400px) {
+  header {
+    padding: 0 8px;
+  }
+
+  header .nav-links {
+    gap: 8px;
+  }
+
+  header a {
+    font-size: 10px;
+  }
+
+  .login-btn {
+    font-size: 9px !important;
+    padding: 4px 8px !important;
+  }
+
+  .user-badge {
+    transform: scale(0.75) !important;
+  }
+}
