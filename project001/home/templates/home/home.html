@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" href="{% static 'home/image/symbol.png' %}">
   <link rel="stylesheet" href="{% static 'home/bootstrap/css/bootstrap.min.css' %}">
   <link rel="stylesheet" href="{% static 'home/fontawesome/css/all.css' %}">
-  <link rel="stylesheet" href="{% static 'home/css/home.css' %}?v=1.4">
+  <link rel="stylesheet" href="{% static 'home/css/home.css' %}?v=1.6">
   <link href="https://fonts.googleapis.com/css2?family=Chela+One&display=swap" rel="stylesheet">
 </head>
 
@@ -147,7 +147,8 @@
             <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('loginPassword', this)"></i>
           </div>
 
-          <a href="#" onclick="showForgot(); return false;" style="color:yellow; display:block; text-align:left; margin-bottom: 10px;">
+          <a href="#" onclick="showForgot(); return false;"
+            style="color:yellow; display:block; text-align:left; margin-bottom: 10px;">
             Forgot Password
           </a>
           <button type="submit" id="btnLoginSubmit">Login</button>
@@ -245,7 +246,7 @@
         challenges</h2>
       <h3 style="color: aqua;">Where real programming meets retro gaming.</h3>
       <h3 style="color: rgb(21, 255, 95);">Dive into interactive puzzles and test your logic</h3>
-      </section>
+    </section>
     <section class="orbit-container">
       <div class="center-hub">
         <img src="{% static 'home/image/logo.png' %}" class="center-logo-img" alt="Logo">
@@ -444,7 +445,7 @@
       </div>
     </footer>
   </div>
-  
+
   <!-- --------------------Javascript Code Area----------------------------- -->
   <script>
     /* Helper to set button loading state */
@@ -723,7 +724,7 @@
     async function startRegisterVerification(formElement) {
       const btn = document.getElementById("btnRegisterSubmit");
       const email = document.getElementById("regEmail").value.trim();
-      
+
       if (email === "") {
         showGameNotification("INPUT REQUIRED", "Please enter a valid email for registration.", "error");
         return;
@@ -1076,11 +1077,11 @@
               const commentDiv = document.createElement('div');
               commentDiv.className = 'single-comment';
               commentDiv.style.cssText = "display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;";
-              
+
               const deleteIconHtml = c.can_delete
-                  ? `<i class="fas fa-trash-alt" onclick="deleteComment(${c.id}, this, '${gameId}')" 
+                ? `<i class="fas fa-trash-alt" onclick="deleteComment(${c.id}, this, '${gameId}')" 
                   style="color: #ff3b3b; cursor: pointer; font-size: 11px; margin-left: 8px; margin-top: 3px;" title="Delete Comment"></i>`
-                  : '';
+                : '';
 
               commentDiv.innerHTML = `
                   <div>

@@ -32,10 +32,21 @@ body {
 
 /*----------- Background Animation of images ------------------------ */
 @keyframes bgChange {
-  0% { background-image: url("/static/home/image/background1.png"); }
-  30% { background-image: url("/static/home/image/background2.png"); }
-  66% { background-image: url("/static/home/image/background2.png"); }
-  100% { background-image: url("/static/home/image/background1.png"); }
+  0% {
+    background-image: url("/static/home/image/background1.png");
+  }
+
+  30% {
+    background-image: url("/static/home/image/background2.png");
+  }
+
+  66% {
+    background-image: url("/static/home/image/background2.png");
+  }
+
+  100% {
+    background-image: url("/static/home/image/background1.png");
+  }
 }
 
 /* ------------------- Header Layout ------------------------------------------------------- */
@@ -146,7 +157,8 @@ header .user-badge .user-avatar {
 header .user-badge .user-avatar img#navProfileImg {
   width: 100% !important;
   height: 100% !important;
-  object-fit: contain !important; /* 🌟 Full Image Fit */
+  object-fit: contain !important;
+  /* 🌟 Full Image Fit */
   object-position: center !important;
   background-color: #0b111e !important;
   margin: 0 !important;
@@ -234,7 +246,9 @@ header .user-badge .user-avatar img#navProfileImg {
   border: 2px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-#profileModal::-webkit-scrollbar { display: none; }
+#profileModal::-webkit-scrollbar {
+  display: none;
+}
 
 #profileModal:hover,
 #profileModal:focus-within {
@@ -311,7 +325,8 @@ header .user-badge .user-avatar img#navProfileImg {
   width: 130px !important;
   height: 130px !important;
   border-radius: 50% !important;
-  object-fit: contain !important; /* 🌟 Image ka koi bhi kona nahi kaatega */
+  object-fit: contain !important;
+  /* 🌟 Image ka koi bhi kona nahi kaatega */
   object-position: center !important;
   background-color: #0b111e !important;
   display: block !important;
@@ -359,29 +374,40 @@ header .user-badge .user-avatar img#navProfileImg {
   cursor: default;
 }
 
-.title:hover { transform: scale(1.05); }
+.title:hover {
+  transform: scale(1.05);
+}
 
 .learn {
   color: #fffb00;
   text-shadow: 0 0 10px hsl(33, 98%, 66%), 0 0 20px rgb(255, 230, 0);
 }
+
 .code {
   color: #00ffff;
   text-shadow: 0 0 10px hsl(206, 100%, 50%), 0 0 20px #00ffff;
 }
+
 .play {
   color: #ff6200;
   text-shadow: 0 0 10px #ff8800, 0 0 20px #ff8800;
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
 }
 
 #startBtn {
   display: none;
-  margin-top: 25px; 
+  margin-top: 25px;
 }
 
 .start-btn {
@@ -420,8 +446,15 @@ footer {
 
 /* Float Keyframes Animation Definition */
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 /* 🪐 ==================== FIXED PATH DYNAMIC NEON ORBIT SYSTEM ==================== */
@@ -488,11 +521,25 @@ footer {
 }
 
 /* Math Angular Splits for Fixed Pathing Layout */
-.game-item:nth-child(1) { transform: rotate(0deg) translate(225px) rotate(0deg); }
-.game-item:nth-child(2) { transform: rotate(72deg) translate(225px) rotate(-72deg); }
-.game-item:nth-child(3) { transform: rotate(144deg) translate(225px) rotate(-144deg); }
-.game-item:nth-child(4) { transform: rotate(216deg) translate(225px) rotate(-216deg); }
-.game-item:nth-child(5) { transform: rotate(288deg) translate(225px) rotate(-288deg); }
+.game-item:nth-child(1) {
+  transform: rotate(0deg) translate(225px) rotate(0deg);
+}
+
+.game-item:nth-child(2) {
+  transform: rotate(72deg) translate(225px) rotate(-72deg);
+}
+
+.game-item:nth-child(3) {
+  transform: rotate(144deg) translate(225px) rotate(-144deg);
+}
+
+.game-item:nth-child(4) {
+  transform: rotate(216deg) translate(225px) rotate(-216deg);
+}
+
+.game-item:nth-child(5) {
+  transform: rotate(288deg) translate(225px) rotate(-288deg);
+}
 
 /* The Game Visual Box Card */
 .game-box {
@@ -725,8 +772,13 @@ footer {
   box-shadow: 0 0 15px #00ffff;
 }
 
-.left-btn { left: -15px; }
-.right-btn { right: -15px; }
+.left-btn {
+  left: -15px;
+}
+
+.right-btn {
+  right: -15px;
+}
 
 /* Password Input Container */
 .password-container {
@@ -800,8 +852,13 @@ footer {
 }
 
 @keyframes toastGlow {
-  from { filter: drop-shadow(0 0 2px #00ffff); }
-  to { filter: drop-shadow(0 0 8px #00ffff); }
+  from {
+    filter: drop-shadow(0 0 2px #00ffff);
+  }
+
+  to {
+    filter: drop-shadow(0 0 8px #00ffff);
+  }
 }
 
 .game-toast.success-theme {
@@ -870,7 +927,7 @@ footer {
     min-height: 36px !important;
     margin-right: 6px !important;
 
-    
+
   }
 
   .user-name {
@@ -894,17 +951,17 @@ footer {
   }
 
   .login-btn {
-    
+
     font-size: 10px !important;
-  padding: 5px 10px !important;
-  white-space: nowrap !important;
+    padding: 5px 10px !important;
+    white-space: nowrap !important;
   }
 
   .content {
-    
+
     min-height: auto !important;
-  padding: 90px 20px 30px !important;
-  justify-content: flex-start !important;
+    padding: 90px 20px 30px !important;
+    justify-content: flex-start !important;
 
   }
 
@@ -969,11 +1026,25 @@ footer {
     transform: translateY(-3px);
   }
 
-  .game-item:nth-child(1) { transform: rotate(0deg) translate(160px) rotate(0deg); }
-  .game-item:nth-child(2) { transform: rotate(72deg) translate(160px) rotate(-72deg); }
-  .game-item:nth-child(3) { transform: rotate(144deg) translate(160px) rotate(-144deg); }
-  .game-item:nth-child(4) { transform: rotate(216deg) translate(160px) rotate(-216deg); }
-  .game-item:nth-child(5) { transform: rotate(288deg) translate(160px) rotate(-288deg); }
+  .game-item:nth-child(1) {
+    transform: rotate(0deg) translate(160px) rotate(0deg);
+  }
+
+  .game-item:nth-child(2) {
+    transform: rotate(72deg) translate(160px) rotate(-72deg);
+  }
+
+  .game-item:nth-child(3) {
+    transform: rotate(144deg) translate(160px) rotate(-144deg);
+  }
+
+  .game-item:nth-child(4) {
+    transform: rotate(216deg) translate(160px) rotate(-216deg);
+  }
+
+  .game-item:nth-child(5) {
+    transform: rotate(288deg) translate(160px) rotate(-288deg);
+  }
 
   /* Game Cards Adjustments */
   .game-card {

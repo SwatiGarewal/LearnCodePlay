@@ -32,10 +32,21 @@ body {
 }
 
 @keyframes bgChange {
-  0% { background-image: url("/static/home/image/background1.png"); }
-  30% { background-image: url("/static/home/image/background2.png"); }
-  66% { background-image: url("/static/home/image/background2.png"); }
-  100% { background-image: url("/static/home/image/background1.png"); }
+  0% {
+    background-image: url("/static/home/image/background1.png");
+  }
+
+  30% {
+    background-image: url("/static/home/image/background2.png");
+  }
+
+  66% {
+    background-image: url("/static/home/image/background2.png");
+  }
+
+  100% {
+    background-image: url("/static/home/image/background1.png");
+  }
 }
 
 /* ------------------- Header Layout ------------------------------------------------------- */
@@ -143,7 +154,8 @@ header .user-badge .user-avatar {
 header .user-badge .user-avatar img#navProfileImg {
   width: 100% !important;
   height: 100% !important;
-  object-fit: contain !important; /* 🌟 Zero Crop / Full Face Contain */
+  object-fit: contain !important;
+  /* 🌟 Zero Crop / Full Face Contain */
   object-position: center !important;
   background-color: #0b111e !important;
   margin: 0 !important;
@@ -230,7 +242,9 @@ header .user-badge .user-avatar img#navProfileImg {
   border: 2px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-#profileModal::-webkit-scrollbar { display: none; }
+#profileModal::-webkit-scrollbar {
+  display: none;
+}
 
 #profileModal:hover,
 #profileModal:focus-within {
@@ -307,7 +321,8 @@ header .user-badge .user-avatar img#navProfileImg {
   width: 130px !important;
   height: 130px !important;
   border-radius: 50% !important;
-  object-fit: contain !important; /* 🌟 Full Image Contain without Head Cut */
+  object-fit: contain !important;
+  /* 🌟 Full Image Contain without Head Cut */
   object-position: center !important;
   background-color: #0b111e !important;
   display: block !important;
@@ -394,8 +409,13 @@ header .user-badge .user-avatar img#navProfileImg {
 }
 
 @keyframes toastGlow {
-  from { filter: drop-shadow(0 0 2px #00ffff); }
-  to { filter: drop-shadow(0 0 8px #00ffff); }
+  from {
+    filter: drop-shadow(0 0 2px #00ffff);
+  }
+
+  to {
+    filter: drop-shadow(0 0 8px #00ffff);
+  }
 }
 
 .game-toast.success-theme {
@@ -419,9 +439,9 @@ header .user-badge .user-avatar img#navProfileImg {
 }
 
 /* ------------------------- Content Area -------------------------------- */
-.container { 
-  width: 100%; 
-  max-width: 1200px; 
+.container {
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 120px 20px 40px 20px;
   display: flex;
@@ -440,8 +460,25 @@ header .user-badge .user-avatar img#navProfileImg {
   padding: 100px 20px 40px 20px;
 }
 
-@keyframes zoomBg { from { transform: scale(1); } to { transform: scale(1.03); } }
-@keyframes glow { from { filter: drop-shadow(0 0 5px #ffcc00); } to { filter: drop-shadow(0 0 20px #ff6600); } }
+@keyframes zoomBg {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes glow {
+  from {
+    filter: drop-shadow(0 0 5px #ffcc00);
+  }
+
+  to {
+    filter: drop-shadow(0 0 20px #ff6600);
+  }
+}
 
 /* ------------------------- 🪐 CENTER LOGO & CLUSTER LAYOUT ---------------------------- */
 .arcade-wrapper {
@@ -464,10 +501,10 @@ header .user-badge .user-avatar img#navProfileImg {
   text-align: center;
 }
 
-.center-logo img { 
+.center-logo img {
   width: 250px;
-  height: auto; 
-  animation: glow 2s infinite alternate; 
+  height: auto;
+  animation: glow 2s infinite alternate;
 }
 
 /* Base Card Styling */
@@ -550,9 +587,9 @@ header .user-badge .user-avatar img#navProfileImg {
   transition: 0.3s ease;
 }
 
-.play:hover { 
-  background: #00ffff; 
-  box-shadow: 0 0 15px #00ffff; 
+.play:hover {
+  background: #00ffff;
+  box-shadow: 0 0 15px #00ffff;
 }
 
 /*------------------------ Footer ------------------------------------ */
@@ -568,8 +605,15 @@ footer {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 /* ==================== 📱 MOBILE VIEW ADJUSTMENTS ==================== */
@@ -664,10 +708,10 @@ footer {
   }
 
   .login-btn {
-    
+
     font-size: 10px !important;
-  padding: 5px 10px !important;
-  white-space: nowrap !important;
+    padding: 5px 10px !important;
+    white-space: nowrap !important;
   }
 
   .container {
