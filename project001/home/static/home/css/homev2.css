@@ -1010,19 +1010,20 @@ footer {
   }
 
   .game-item {
-    width: 85px;
-    height: 48px;
-    margin-left: -42px;
-    margin-top: -24px;
-  }
+  width: 100px;
+  height: 60px;
+  margin-left: -50px;
+  margin-top: -30px;
+}
 
   .game-box {
-    font-size: 0.68rem;
-    padding: 4px;
-    line-height: 1.1;
-     word-wrap: break-word;
-
-  }
+  font-size: 0.62rem;
+  padding: 3px;
+  line-height: 1.1;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
 
   .start-btn:hover {
     box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
