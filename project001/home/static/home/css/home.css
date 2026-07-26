@@ -958,7 +958,7 @@ footer {
   }
 
   .content {
-
+    margin-top: 0%;
     min-height: auto !important;
     padding: 90px 20px 30px !important;
     justify-content: flex-start !important;
