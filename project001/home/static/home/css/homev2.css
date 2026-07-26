@@ -1009,17 +1009,18 @@ footer {
     width: 100px;
   }
 
-  .game-item {
-  width: 100px;
-  height: 60px;
-  margin-left: -50px;
-  margin-top: -30px;
+ .game-item {
+  width: 105px;
+  height: 62px;
+  margin-left: -52px;
+  margin-top: -31px;
 }
 
-  .game-box {
+.game-box {
   font-size: 0.62rem;
   padding: 3px;
-  line-height: 1.1;
+  line-height: 1.15;
+  letter-spacing: -0.3px;
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: normal;
